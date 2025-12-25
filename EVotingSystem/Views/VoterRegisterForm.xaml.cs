@@ -1,5 +1,8 @@
-﻿using EVotingSystem.Views;
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
 using System.Text;
+using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Data;
@@ -10,19 +13,16 @@ using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
 
-
-namespace EVotingSystem
+namespace EVotingSystem.Views
 {
     /// <summary>
-    /// Interaction logic for MainWindow.xaml
+    /// Interaction logic for VoterRegisterForm.xaml
     /// </summary>
-    public partial class MainWindow : Window
+    public partial class VoterRegisterForm : UserControl
     {
-        public MainWindow()
+        public VoterRegisterForm()
         {
             InitializeComponent();
-            MainContent.Content = new LoginView();
-
         }
     }
 }
