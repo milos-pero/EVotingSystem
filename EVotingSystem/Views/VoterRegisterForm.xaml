@@ -5,22 +5,26 @@
 	<StackPanel>
 
 		<TextBlock Text="Ime"/>
-		<TextBox Height="25"
+		<TextBox x:Name="FirstNameTextBox"
+				 Height="25"
                  VerticalContentAlignment="Center"
                  Margin="0,5,0,15"/>
 
 		<TextBlock Text="Prezime"/>
-		<TextBox Height="25"
+		<TextBox x:Name="LastNameTextBox"
+				 Height="25"
                  VerticalContentAlignment="Center"
                  Margin="0,5,0,15"/>
 
 		<TextBlock Text="Korisničko ime"/>
-		<TextBox Height="25"
+		<TextBox x:Name="UsernameTextBox"
+				 Height="25"
                  VerticalContentAlignment="Center"
                  Margin="0,5,0,15"/>
 
 		<TextBlock Text="Lozinka"/>
-		<PasswordBox Height="25"
+		<PasswordBox x:Name="PasswordBox"
+					 Height="25"
                      Margin="0,5,0,15"/>
 
 	</StackPanel>

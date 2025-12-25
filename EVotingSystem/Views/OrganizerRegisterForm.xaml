@@ -5,17 +5,20 @@
 	<StackPanel>
 
 		<TextBlock Text="Naziv organizacije"/>
-		<TextBox Height="25"
+		<TextBox x:Name="OrganizationNameTextBox"
+				 Height="25"
                  VerticalContentAlignment="Center"
                  Margin="0,5,0,15"/>
 
 		<TextBlock Text="Identifikacioni broj"/>
-		<TextBox Height="25"
+		<TextBox x:Name="OrganizationIdTextBox"
+				 Height="25"
                  VerticalContentAlignment="Center"
                  Margin="0,5,0,15"/>
 
 		<TextBlock Text="Lozinka"/>
-		<PasswordBox Height="25"
+		<PasswordBox x:Name="PasswordBox"
+					 Height="25"
                      Margin="0,5,0,15"/>
 
 	</StackPanel>
