@@ -1,4 +1,5 @@
 ﻿using EVotingSystem.Models;
+using EVotingSystem.Security;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -61,6 +62,9 @@ namespace EVotingSystem.Views
             }
 
             // Later: handle certificate generation & storage
+            var cert = CertificateService.GenerateCertificate(newUser, newUser.Password);
+
+            MessageBox.Show("Certificate successfully generated!");
         }
 
         private User GetUserFromForm()
