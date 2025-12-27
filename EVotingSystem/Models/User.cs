@@ -3,9 +3,11 @@
     // Base class
     public abstract class User
     {
-        public string Password { get; set; } // All users have a password
+        public Guid Id { get; set; } = Guid.NewGuid();
+        public string Password { get; set; }
 
-        // You can add common methods later, like VerifyPassword()
+        public byte[] KeySalt { get; set; }
+        public string CertificatePath { get; set; }
     }
 
     // Organizer subclass

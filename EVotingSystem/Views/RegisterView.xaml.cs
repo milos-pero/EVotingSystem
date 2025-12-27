@@ -2,7 +2,9 @@
 using EVotingSystem.Security;
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
+using System.Security.Cryptography.X509Certificates;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows;
@@ -50,22 +52,40 @@ namespace EVotingSystem.Views
         private void Register_Click(object sender, RoutedEventArgs e)
         {
             User newUser = GetUserFromForm();
+            if (newUser == null)
+                return;
 
-            // For now, just show a message to test
-            if (newUser is Organizer organizer)
-            {
-                MessageBox.Show($"Organizer registered: {organizer.OrganizationName}, ID: {organizer.OrganizationId}");
-            }
-            else if (newUser is Voter voter)
-            {
-                MessageBox.Show($"Voter registered: {voter.FirstName} {voter.LastName}, Username: {voter.Username}");
-            }
+            // 1️⃣ Generate salt for key protection
+            byte[] salt = KeyProtectionService.GenerateSalt();
+            newUser.KeySalt = salt;
 
-            // Later: handle certificate generation & storage
-            var cert = CertificateService.GenerateCertificate(newUser, newUser.Password);
+            // 2️⃣ Derive PFX password from user's password
+            string pfxPassword = KeyProtectionService.DerivePfxPassword(
+                newUser.Password,
+                salt);
 
-            MessageBox.Show("Certificate successfully generated!");
+            // 3️⃣ Issue certificate
+            var cert = CertificateIssuer.IssueUserCertificate(newUser);
+
+            // 4️⃣ Save certificate securely
+            string certDir = "Certificates";
+            Directory.CreateDirectory(certDir);
+
+            string certPath = System.IO.Path.Combine(
+                certDir,
+                $"{newUser.Id}.pfx");
+
+            byte[] pfxData = cert.Export(
+                X509ContentType.Pfx,
+                pfxPassword);
+
+            File.WriteAllBytes(certPath, pfxData);
+
+            newUser.CertificatePath = certPath;
+
+            MessageBox.Show("User registered and certificate securely stored!");
         }
+
 
         private User GetUserFromForm()
         {
