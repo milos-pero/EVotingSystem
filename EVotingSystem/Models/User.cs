@@ -8,7 +8,8 @@
 
         public byte[] KeySalt { get; set; }
         public string CertificatePath { get; set; }
-    }
+        public string PublicCertPath { get; set; }
+}
 
     // Organizer subclass
     public class Organizer : User

@@ -21,7 +21,7 @@ namespace EVotingSystem
         public MainWindow()
         {
             InitializeComponent();
-            MainContent.Content = new LoginView();
+            MainContent.Content = new LoginCertificateView();
 
         }
     }

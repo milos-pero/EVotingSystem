@@ -16,6 +16,7 @@ using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
+using Path = System.IO.Path;
 
 namespace EVotingSystem.Views
 {
@@ -46,7 +47,7 @@ namespace EVotingSystem.Views
         private void Back_Click(object sender, RoutedEventArgs e)
         {
             ((MainWindow)Application.Current.MainWindow)
-                .MainContent.Content = new LoginView();
+                .MainContent.Content = new LoginCertificateView();
         }
 
         private void Register_Click(object sender, RoutedEventArgs e)
@@ -55,36 +56,39 @@ namespace EVotingSystem.Views
             if (newUser == null)
                 return;
 
-            // 1️⃣ Generate salt for key protection
+            //Generate salt for key protection
             byte[] salt = KeyProtectionService.GenerateSalt();
             newUser.KeySalt = salt;
 
-            // 2️⃣ Derive PFX password from user's password
+            //Derive PFX password from user's password
             string pfxPassword = KeyProtectionService.DerivePfxPassword(
                 newUser.Password,
                 salt);
 
-            // 3️⃣ Issue certificate
+            //Issue certificate
             var cert = CertificateIssuer.IssueUserCertificate(newUser);
 
-            // 4️⃣ Save certificate securely
+            //Create certificate folder if not exists
             string certDir = "Certificates";
             Directory.CreateDirectory(certDir);
 
-            string certPath = System.IO.Path.Combine(
-                certDir,
-                $"{newUser.Id}.pfx");
+            //Export PFX (private key + public key, password protected)
+            string pfxPath = Path.Combine(certDir, $"{newUser.Id}.pfx");
+            byte[] pfxData = cert.Export(X509ContentType.Pfx, pfxPassword);
+            File.WriteAllBytes(pfxPath, pfxData);
 
-            byte[] pfxData = cert.Export(
-                X509ContentType.Pfx,
-                pfxPassword);
+            //Export CER (public key only)
+            string cerPath = Path.Combine(certDir, $"{newUser.Id}.cer");
+            byte[] cerData = cert.Export(X509ContentType.Cert); // public key only
+            File.WriteAllBytes(cerPath, cerData);
 
-            File.WriteAllBytes(certPath, pfxData);
-
-            newUser.CertificatePath = certPath;
-
-            MessageBox.Show("User registered and certificate securely stored!");
+            //Store paths in user
+            newUser.CertificatePath = pfxPath;   // private cert
+            newUser.PublicCertPath = cerPath;    // public cert for step 1 of login
+            UserRepository.AddUser(newUser);
+            MessageBox.Show($"User registered successfully!");
         }
+
 
 
         private User GetUserFromForm()

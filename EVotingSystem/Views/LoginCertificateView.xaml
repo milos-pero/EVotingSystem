@@ -1,0 +1,47 @@
+﻿<UserControl x:Class="EVotingSystem.Views.LoginCertificateView"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
+
+	<StackPanel Margin="40" Width="300" HorizontalAlignment="Center">
+
+		<TextBlock Text="EVoting"
+                   FontSize="32"
+                   FontWeight="Bold"
+                   HorizontalAlignment="Center"
+                   Margin="0,0,0,30"/>
+
+		<TextBlock Text="Step 1: Digital Certificate"
+                   FontSize="16"
+                   FontWeight="SemiBold"
+                   HorizontalAlignment="Center"
+                   Margin="0,0,0,20"/>
+
+		<Button Content="Select Certificate (.pfx)"
+                Height="35"
+                Margin="0,0,0,10"
+                Click="SelectCertificate_Click"/>
+
+		<TextBlock x:Name="CertificateStatusText"
+                   Text="No certificate selected"
+                   Foreground="Gray"
+                   TextAlignment="Center"
+                   Margin="0,0,0,20"/>
+
+		<Button x:Name="ContinueButton"
+                Content="Continue"
+                Height="35"
+                IsEnabled="False"
+                Margin="0,0,0,15"
+                Click="Continue_Click"/>
+
+		<TextBlock HorizontalAlignment="Center">
+            <Run Text="Don't have an account? "/>
+            <Run Text="Register!"
+                 Foreground="Blue"
+                 TextDecorations="Underline"
+                 Cursor="Hand"
+                 MouseLeftButtonDown="Register_Click"/>
+		</TextBlock>
+
+	</StackPanel>
+</UserControl>
