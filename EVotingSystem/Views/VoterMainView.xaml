@@ -1,0 +1,26 @@
+﻿<UserControl x:Class="EVotingSystem.Views.VoterMainView"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
+
+	<Grid Margin="30">
+		<StackPanel>
+
+			<TextBlock Text="Aktivna glasanja"
+                       FontSize="26"
+                       FontWeight="Bold"
+                       HorizontalAlignment="Center"
+                       Margin="0,0,0,20"/>
+
+			<!-- Placeholder for future table -->
+			<Border BorderBrush="Gray"
+                    BorderThickness="1"
+                    Padding="20"
+                    CornerRadius="5">
+				<TextBlock Text="Ovde će se prikazivati aktivna glasanja."
+                           Foreground="Gray"
+                           HorizontalAlignment="Center"/>
+			</Border>
+
+		</StackPanel>
+	</Grid>
+</UserControl>

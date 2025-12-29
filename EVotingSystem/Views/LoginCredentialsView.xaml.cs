@@ -5,6 +5,7 @@ using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Input;
 using EVotingSystem.Models;
+using EVotingSystem.Persistence;
 using EVotingSystem.Security;
 
 namespace EVotingSystem.Views
@@ -32,25 +33,26 @@ namespace EVotingSystem.Views
 
             try
             {
-                //Find the user by username (replace this with your actual user storage)
-                User? user = UserRepository.GetUserByName(username);
+                // Find the user by username (replace this with your actual user storage)
+                User? user = UserRepository.FindUserForLogin(username);
+
                 if (user == null)
                 {
                     MessageBox.Show("User not found.");
                     return;
                 }
 
-                // 2️⃣ Verify password hash (assuming your User object stores password in plain for now)
+                // Verify password hash (assuming your User object stores password in plain for now)
                 if (user.Password != password)
                 {
                     MessageBox.Show("Incorrect password.");
                     return;
                 }
 
-                // 3️⃣ Derive PFX password from user password + salt
+                // Derive PFX password from user password + salt
                 string pfxPassword = KeyProtectionService.DerivePfxPassword(password, user.KeySalt!);
 
-                // 4️⃣ Load the user's PFX file
+                // Load the user's PFX file
                 if (!File.Exists(user.CertificatePath!))
                 {
                     MessageBox.Show("Certificate file not found.");
@@ -62,19 +64,27 @@ namespace EVotingSystem.Views
                     pfxPassword,
                     X509KeyStorageFlags.Exportable);
 
-                // 5️⃣ Validate full certificate (private key, issuer, chain)
+                // Validate full certificate (private key, issuer, chain)
                 CertificateValidationService.ValidateFullUserCertificate(fullCert);
 
-                // 6️⃣ Ensure the public certificate from Step 1 matches the full certificate
+                // Ensure the public certificate from Step 1 matches the full certificate
                 if (!fullCert.Thumbprint.Equals(publicCertificate.Thumbprint, StringComparison.OrdinalIgnoreCase))
                 {
                     MessageBox.Show("The selected certificate does not belong to this user.");
                     return;
                 }
 
-                // ✅ Login successful
-                MessageBox.Show($"Welcome, {username}!");
-                // TODO: Navigate to main application page
+                // Login successful
+                if (user is Organizer)
+                {
+                    ((MainWindow)Application.Current.MainWindow)
+                        .MainContent.Content = new OrganizerMainView();
+                }
+                else if (user is Voter)
+                {
+                    ((MainWindow)Application.Current.MainWindow)
+                        .MainContent.Content = new VoterMainView();
+                }
             }
             catch (Exception ex)
             {

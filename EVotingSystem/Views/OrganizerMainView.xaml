@@ -1,0 +1,21 @@
+﻿<UserControl x:Class="EVotingSystem.Views.OrganizerMainView"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
+
+	<Grid Margin="40">
+		<StackPanel HorizontalAlignment="Center" VerticalAlignment="Center">
+
+			<TextBlock Text="Organizer panel"
+                       FontSize="26"
+                       FontWeight="Bold"
+                       HorizontalAlignment="Center"
+                       Margin="0,0,0,30"/>
+
+			<Button Content="Kreiraj novo glasanje"
+                    Width="220"
+                    Height="45"
+                    FontSize="14"
+                    Click="CreateVoting_Click"/>
+		</StackPanel>
+	</Grid>
+</UserControl>
