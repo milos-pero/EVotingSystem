@@ -1,4 +1,5 @@
 ﻿using EVotingSystem.Models;
+using EVotingSystem.Persistence;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -66,9 +67,8 @@ namespace EVotingSystem.Views
             MessageBox.Show(
                 $"Glasanje \"{voting.Title}\" uspešno kreirano sa {voting.Options.Count} opcija.");
 
-            // Later:
-            // VotingRepository.Add(voting);
-            // Navigate back to organizer main view
+             VotingRepository.AddVoting(voting);
+
         }
     }
 }
