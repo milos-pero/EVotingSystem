@@ -59,10 +59,13 @@ namespace EVotingSystem.Views
                     return;
                 }
 
-                using X509Certificate2 fullCert = new X509Certificate2(
-                    File.ReadAllBytes(user.CertificatePath!),
-                    pfxPassword,
-                    X509KeyStorageFlags.Exportable);
+                X509Certificate2 fullCert = new X509Certificate2(
+                File.ReadAllBytes(user.CertificatePath),
+                pfxPassword,
+                X509KeyStorageFlags.Exportable | X509KeyStorageFlags.PersistKeySet);
+
+                SessionContext.UserCertificate = fullCert;
+
 
                 // Validate full certificate (private key, issuer, chain)
                 CertificateValidationService.ValidateFullUserCertificate(fullCert);
@@ -77,11 +80,15 @@ namespace EVotingSystem.Views
                 // Login successful
                 if (user is Organizer)
                 {
+                    SessionContext.CurrentUser = user;
+                    SessionContext.UserCertificate = fullCert;
                     ((MainWindow)Application.Current.MainWindow)
                         .MainContent.Content = new OrganizerMainView();
                 }
                 else if (user is Voter)
                 {
+                    SessionContext.CurrentUser = user;
+                    SessionContext.UserCertificate = fullCert;
                     ((MainWindow)Application.Current.MainWindow)
                         .MainContent.Content = new VoterMainView();
                 }

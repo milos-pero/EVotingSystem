@@ -3,6 +3,8 @@ using System.Windows;
 using System.Windows.Controls;
 using EVotingSystem.Models;
 using EVotingSystem.Persistence;
+using EVotingSystem.Security;
+using EVotingSystem.Security.Ca;
 
 namespace EVotingSystem.Views
 {
@@ -34,12 +36,24 @@ namespace EVotingSystem.Views
             if (VotingsList.SelectedItem is not Voting selectedVoting)
                 return;
 
-            // Navigate to vote menu
-            ((MainWindow)Application.Current.MainWindow)
-                .MainContent.Content = new VoteMenuView(selectedVoting);
+            var voter = SessionContext.CurrentUser as Voter;
+            var voterCert = SessionContext.UserCertificate;
 
-            // Optional: reset selection to prevent double-trigger
-            VotingsList.SelectedItem = null;
+            if (voter == null || voterCert == null)
+            {
+                MessageBox.Show("Session error. Please log in again.");
+                return;
+            }
+
+            // Organizer certificate (used to encrypt symmetric key)
+            var organizerCert = OrganizerCaService.GetOrCreateCa();
+
+            ((MainWindow)Application.Current.MainWindow).MainContent.Content =
+                new VoteMenuView(
+                    selectedVoting,
+                    voter,
+                    voterCert,
+                    organizerCert);
         }
     }
 }
