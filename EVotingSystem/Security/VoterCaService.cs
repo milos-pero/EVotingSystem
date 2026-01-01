@@ -62,5 +62,16 @@ namespace EVotingSystem.Security.Ca
 
             return voterCa;
         }
+        public static X509Certificate2? GetCertificateForVoter(Guid voterId)
+        {
+            string voterCertDir = Path.Combine("Certificates", "Voters");
+            string certPath = Path.Combine(voterCertDir, $"{voterId}.cer");
+
+            if (!File.Exists(certPath))
+                return null;
+
+            return new X509Certificate2(certPath);
+        }
+
     }
 }

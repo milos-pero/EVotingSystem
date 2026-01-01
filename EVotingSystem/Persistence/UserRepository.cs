@@ -51,6 +51,14 @@ namespace EVotingSystem.Persistence
 
             return dto == null ? null : FromDto(dto);
         }
+        public static User? FindById(Guid id)
+        {
+            var users = LoadAllInternal();
+
+            var dto = users.FirstOrDefault(u => u.Id == id);
+            return dto == null ? null : FromDto(dto);
+        }
+
 
         // ---------------------------
         // INTERNAL STORAGE

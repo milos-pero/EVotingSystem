@@ -63,6 +63,12 @@ namespace EVotingSystem.Persistence
             var votes = LoadAllVotes(); // read all encrypted votes
             return votes.Any(v => v.VoterId == voterId && v.VotingId == votingId);
         }
+        public static List<VoteMetadata> GetMetadataForVoting(Guid votingId)
+        {
+            return LoadAllMetadata()
+                .Where(m => m.VotingId == votingId)
+                .ToList();
+        }
 
 
         // ---------------------------

@@ -15,5 +15,11 @@ namespace EVotingSystem.Views
             ((MainWindow)Application.Current.MainWindow)
                 .MainContent.Content = new CreateVotingView();
         }
+
+        private void ViewVotings_Click(object sender, RoutedEventArgs e)
+        {
+            ((MainWindow)Application.Current.MainWindow)
+                .MainContent.Content = new OrganizerVotingsView();
+        }
     }
 }
