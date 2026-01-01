@@ -18,23 +18,29 @@ namespace EVotingSystem.Views
 
         private void LoadActiveVotings()
         {
-            var activeVotings = VotingRepository.GetActiveVotings();
+            var votings = VotingRepository.GetAllVotings();
+            VotingsList.ItemsSource = votings;
 
-            if (activeVotings.Any())
-            {
-                VotingsList.ItemsSource = activeVotings;
-            }
-            else
-            {
-                VotingsList.Items.Clear();
-                VotingsList.Items.Add("Trenutno nema aktivnih glasanja.");
-            }
         }
+
 
         private void VotingsList_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
             if (VotingsList.SelectedItem is not Voting selectedVoting)
                 return;
+
+            if (selectedVoting.Status != VotingStatus.Active)
+            {
+                MessageBox.Show(
+                    selectedVoting.Status == VotingStatus.NotStarted
+                        ? "Glasanje još nije počelo."
+                        : "Glasanje je završeno."
+                );
+
+                VotingsList.SelectedItem = null;
+                return;
+            }
+
 
             var voter = SessionContext.CurrentUser as Voter;
             var voterCert = SessionContext.UserCertificate;

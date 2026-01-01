@@ -16,6 +16,9 @@ namespace EVotingSystem.Security
             X509Certificate2 voterCertificate,
             X509Certificate2 organizerCertificate)
         {
+            if (voting.Status != VotingStatus.Active)
+                throw new InvalidOperationException("Glasanje nije aktivno.");
+
             // 1. Serialize vote choice
 
             byte[] voteBytes = Encoding.UTF8.GetBytes(selectedOption);

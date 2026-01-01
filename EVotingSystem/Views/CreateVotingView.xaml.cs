@@ -13,11 +13,36 @@ namespace EVotingSystem.Views
         public CreateVotingView()
         {
             InitializeComponent();
+
+            // Populate hours & minutes
+            for (int h = 0; h < 24; h++)
+            {
+                StartHourBox.Items.Add(h.ToString("D2"));
+                EndHourBox.Items.Add(h.ToString("D2"));
+            }
+
+            for (int m = 0; m < 60; m++)
+            {
+                StartMinuteBox.Items.Add(m.ToString("D2"));
+                EndMinuteBox.Items.Add(m.ToString("D2"));
+            }
+
+            // Defaults for easy testing
+            var now = DateTime.Now;
+            var end = now.AddMinutes(10);
+
+            StartDatePicker.SelectedDate = now.Date;
+            EndDatePicker.SelectedDate = end.Date;
+
+            StartHourBox.SelectedIndex = now.Hour;
+            StartMinuteBox.SelectedIndex = now.Minute;
+
+            EndHourBox.SelectedIndex = end.Hour;
+            EndMinuteBox.SelectedIndex = end.Minute;
         }
 
         private void Create_Click(object sender, RoutedEventArgs e)
         {
-            // Basic validation
             if (string.IsNullOrWhiteSpace(TitleTextBox.Text))
             {
                 MessageBox.Show("Naslov je obavezan.");
@@ -25,13 +50,25 @@ namespace EVotingSystem.Views
             }
 
             if (!StartDatePicker.SelectedDate.HasValue ||
-                !EndDatePicker.SelectedDate.HasValue)
+                !EndDatePicker.SelectedDate.HasValue ||
+                StartHourBox.SelectedItem == null ||
+                StartMinuteBox.SelectedItem == null ||
+                EndHourBox.SelectedItem == null ||
+                EndMinuteBox.SelectedItem == null)
             {
                 MessageBox.Show("Morate uneti početak i kraj glasanja.");
                 return;
             }
 
-            if (EndDatePicker.SelectedDate <= StartDatePicker.SelectedDate)
+            DateTime startTime = StartDatePicker.SelectedDate.Value
+                .AddHours(int.Parse(StartHourBox.SelectedItem.ToString()!))
+                .AddMinutes(int.Parse(StartMinuteBox.SelectedItem.ToString()!));
+
+            DateTime endTime = EndDatePicker.SelectedDate.Value
+                .AddHours(int.Parse(EndHourBox.SelectedItem.ToString()!))
+                .AddMinutes(int.Parse(EndMinuteBox.SelectedItem.ToString()!));
+
+            if (endTime <= startTime)
             {
                 MessageBox.Show("Kraj glasanja mora biti posle početka.");
                 return;
@@ -58,17 +95,16 @@ namespace EVotingSystem.Views
             {
                 Title = TitleTextBox.Text,
                 Description = DescriptionTextBox.Text,
-                StartTime = StartDatePicker.SelectedDate.Value,
-                EndTime = EndDatePicker.SelectedDate.Value,
+                StartTime = startTime,
+                EndTime = endTime,
                 Options = options
             };
 
-            // For now: just confirm creation
+            VotingRepository.AddVoting(voting);
+
             MessageBox.Show(
-                $"Glasanje \"{voting.Title}\" uspešno kreirano sa {voting.Options.Count} opcija.");
-
-             VotingRepository.AddVoting(voting);
-
+                $"Glasanje \"{voting.Title}\" kreirano.\n" +
+                $"Početak: {startTime}\nKraj: {endTime}");
         }
     }
 }

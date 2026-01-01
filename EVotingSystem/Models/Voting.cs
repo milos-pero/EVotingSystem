@@ -13,6 +13,7 @@ namespace EVotingSystem.Models
         public DateTime StartTime { get; set; }
         public DateTime EndTime { get; set; }
 
+
         // 2–5 options
         public List<string> Options { get; set; } = new();
 
@@ -22,15 +23,25 @@ namespace EVotingSystem.Models
             get
             {
                 var now = DateTime.Now;
-                if (now > EndTime) return VotingStatus.Finished;
+
+                if (now < StartTime)
+                    return VotingStatus.NotStarted;
+
+                if (now > EndTime)
+                    return VotingStatus.Finished;
+
                 return VotingStatus.Active;
             }
         }
+
+
     }
 
     public enum VotingStatus
     {
+        NotStarted,
         Active,
         Finished
     }
+
 }

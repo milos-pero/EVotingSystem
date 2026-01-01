@@ -5,6 +5,8 @@ using System.Windows.Controls;
 using EVotingSystem.Models;
 using EVotingSystem.Persistence;
 using EVotingSystem.Security;
+using System.Windows.Threading;
+
 
 namespace EVotingSystem.Views
 {
@@ -14,6 +16,8 @@ namespace EVotingSystem.Views
         private readonly Voter voter;
         private readonly X509Certificate2 voterCert;
         private readonly X509Certificate2 organizerCert;
+        private DispatcherTimer _statusTimer;
+
 
         public VoteMenuView(
             Voting voting,
@@ -22,6 +26,14 @@ namespace EVotingSystem.Views
             X509Certificate2 organizerCert)
         {
             InitializeComponent();
+
+            _statusTimer = new DispatcherTimer
+            {
+                Interval = TimeSpan.FromSeconds(1)
+            };
+
+            _statusTimer.Tick += (s, e) => UpdateVoteButtonState();
+            _statusTimer.Start();
 
             this.voting = voting;
             this.voter = voter;
@@ -33,6 +45,8 @@ namespace EVotingSystem.Views
             PeriodText.Text = $"{voting.StartTime:G} - {voting.EndTime:G}";
 
             BuildOptions();
+            UpdateVoteButtonState();
+
         }
 
         private void BuildOptions()
@@ -97,6 +111,27 @@ namespace EVotingSystem.Views
                 MessageBox.Show($"Voting failed: {ex.Message}");
             }
         }
+        private void UpdateVoteButtonState()
+        {
+            switch (voting.Status)
+            {
+                case VotingStatus.NotStarted:
+                    VoteButton.IsEnabled = false;
+                    VoteButton.Content = "Glasanje još nije počelo";
+                    break;
+
+                case VotingStatus.Active:
+                    VoteButton.IsEnabled = true;
+                    VoteButton.Content = "Glasaj";
+                    break;
+
+                case VotingStatus.Finished:
+                    VoteButton.IsEnabled = false;
+                    VoteButton.Content = "Glasanje je završeno";
+                    break;
+            }
+        }
+
 
     }
 }

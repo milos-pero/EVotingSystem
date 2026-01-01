@@ -22,12 +22,12 @@ namespace EVotingSystem.Persistence
 
         public static void AddVoting(Voting voting)
         {
-            var votings = GetAll();
+            var votings = GetAllVotings();
             votings.Add(voting);
             SaveAll(votings);
         }
 
-        public static List<Voting> GetAll()
+        public static List<Voting> GetAllVotings()
         {
             string json = File.ReadAllText(FilePath);
             return JsonSerializer.Deserialize<List<Voting>>(json)!;
@@ -35,7 +35,7 @@ namespace EVotingSystem.Persistence
 
         public static List<Voting> GetActiveVotings()
         {
-            return GetAll()
+            return GetAllVotings()
                 .Where(v => v.Status == VotingStatus.Active)
                 .ToList();
         }
