@@ -12,6 +12,11 @@ namespace EVotingSystem.Views
             InitializeComponent();
             LoadVotings();
         }
+        private void Back_Click(object sender, RoutedEventArgs e)
+        {
+            ((MainWindow)Application.Current.MainWindow)
+                .MainContent.Content = new OrganizerMainView();
+        }
 
         private void LoadVotings()
         {

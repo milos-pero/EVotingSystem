@@ -57,38 +57,64 @@ namespace EVotingSystem.Views
             if (newUser == null)
                 return;
 
-            //Generate salt for key protection
+            // --- VALIDATE UNIQUENESS ---
+
+            // Check for duplicate names across all users
+            bool nameExists = UserRepository.GetAllUsers().Any(u =>
+            {
+                if (newUser is Voter nv && u is Voter v)
+                    return nv.FirstName.Equals(v.FirstName, StringComparison.OrdinalIgnoreCase)
+                        && nv.LastName.Equals(v.LastName, StringComparison.OrdinalIgnoreCase);
+
+                if (newUser is Organizer no && u is Organizer o)
+                    return no.OrganizationName.Equals(o.OrganizationName, StringComparison.OrdinalIgnoreCase);
+
+                return false;
+            });
+
+            if (nameExists)
+            {
+                MessageBox.Show("A user with the same name or organization name already exists.");
+                return;
+            }
+
+            // For organizers: also check duplicate OrganizationId
+            if (newUser is Organizer newOrg)
+            {
+                bool idExists = UserRepository.GetAllUsers().OfType<Organizer>()
+                    .Any(o => o.OrganizationId.Equals(newOrg.OrganizationId, StringComparison.OrdinalIgnoreCase));
+
+                if (idExists)
+                {
+                    MessageBox.Show("An organizer with the same identification number already exists.");
+                    return;
+                }
+            }
+
+            // --- CONTINUE REGISTRATION ---
             byte[] salt = KeyProtectionService.GenerateSalt();
             newUser.KeySalt = salt;
 
-            //Derive PFX password from user's password
-            string pfxPassword = KeyProtectionService.DerivePfxPassword(
-                newUser.Password,
-                salt);
+            string pfxPassword = KeyProtectionService.DerivePfxPassword(newUser.Password, salt);
 
-            //Issue certificate
             var cert = CertificateIssuer.IssueUserCertificate(newUser);
 
-            //Create certificate folder if not exists
             string certDir = "Certificates";
             Directory.CreateDirectory(certDir);
 
-            //Export PFX (private key + public key, password protected)
             string pfxPath = Path.Combine(certDir, $"{newUser.Id}.pfx");
-            byte[] pfxData = cert.Export(X509ContentType.Pfx, pfxPassword);
-            File.WriteAllBytes(pfxPath, pfxData);
+            File.WriteAllBytes(pfxPath, cert.Export(X509ContentType.Pfx, pfxPassword));
 
-            //Export CER (public key only)
             string cerPath = Path.Combine(certDir, $"{newUser.Id}.cer");
-            byte[] cerData = cert.Export(X509ContentType.Cert); // public key only
-            File.WriteAllBytes(cerPath, cerData);
+            File.WriteAllBytes(cerPath, cert.Export(X509ContentType.Cert));
 
-            //Store paths in user
-            newUser.CertificatePath = pfxPath;   // private cert
-            newUser.PublicCertPath = cerPath;    // public cert for step 1 of login
+            newUser.CertificatePath = pfxPath;
+            newUser.PublicCertPath = cerPath;
+
             UserRepository.AddUser(newUser);
-            MessageBox.Show($"User registered successfully!");
+            MessageBox.Show("User registered successfully!");
         }
+
 
 
 

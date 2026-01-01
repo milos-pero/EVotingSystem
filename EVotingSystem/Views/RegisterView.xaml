@@ -6,10 +6,12 @@
 	<StackPanel Margin="40" Width="300" HorizontalAlignment="Center">
 
 		<!-- Back button -->
-		<Button Content="← Back"
-                HorizontalAlignment="Left"
-                Margin="0,0,0,20"
-                Click="Back_Click"/>
+		<Button Content="← Nazad"
+        Width="100"
+        Margin="20"
+        HorizontalAlignment="Left"
+        VerticalAlignment="Top"
+        Click="Back_Click"/>
 
 		<TextBlock Text="Registracija"
                    FontSize="26"
@@ -27,7 +29,7 @@
                     Margin="0,0,10,0"
                     Click="Organizer_Click"/>
 
-			<Button Content="Glasač"
+			<Button Content="Glasac"
                     Width="120"
                     Click="Voter_Click"/>
 		</StackPanel>
@@ -37,7 +39,7 @@
 
 		<!-- Register button -->
 		<Button x:Name="RegisterButton"
-            Content="Register"
+            Content="Registruj se"
             Height="35"
             Margin="0,20,0,0"
             Click="Register_Click"

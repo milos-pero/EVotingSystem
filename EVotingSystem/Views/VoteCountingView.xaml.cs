@@ -4,6 +4,7 @@ using System.Linq;
 using System.Security.Cryptography;
 using System.Security.Cryptography.X509Certificates;
 using System.Text;
+using System.Windows;
 using System.Windows.Controls;
 using EVotingSystem.Models;
 using EVotingSystem.Persistence;
@@ -28,7 +29,11 @@ namespace EVotingSystem.Views
 
             CountVotes();
         }
-
+        private void Back_Click(object sender, RoutedEventArgs e)
+        {
+            ((MainWindow)Application.Current.MainWindow)
+                .MainContent.Content = new OrganizerVotingsView();
+        }
         private void CountVotes()
         {
             var encryptedVotes = VoteRepository.GetVotesForVoting(_voting.Id);

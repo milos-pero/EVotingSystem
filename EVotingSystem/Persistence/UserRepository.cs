@@ -30,6 +30,10 @@ namespace EVotingSystem.Persistence
             users.Add(ToDto(user));
             SaveAllInternal(users);
         }
+        public static List<User> GetAllUsers()
+        {
+            return LoadAllDtos().Select(FromDto).ToList();
+        }
 
         public static User? FindByPublicCertPath(string publicCertPath)
         {

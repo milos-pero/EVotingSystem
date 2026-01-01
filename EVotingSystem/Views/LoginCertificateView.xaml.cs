@@ -43,7 +43,7 @@ namespace EVotingSystem.Views
                 CertificateValidationService.ValidatePublicUserCertificate(SelectedCertificate);
 
                 // 3️⃣ Update UI
-                CertificateStatusText.Text = "Certificate valid ✔";
+                CertificateStatusText.Text = "Sertifikat validan ✔";
                 CertificateStatusText.Foreground = Brushes.Green;
                 ContinueButton.IsEnabled = true;
             }
@@ -51,7 +51,7 @@ namespace EVotingSystem.Views
             {
                 SelectedCertificatePath = null;
                 SelectedCertificate = null;
-                CertificateStatusText.Text = "Invalid certificate ✖";
+                CertificateStatusText.Text = "Sertifikat nije validan ✖";
                 CertificateStatusText.Foreground = Brushes.Red;
                 ContinueButton.IsEnabled = false;
             }

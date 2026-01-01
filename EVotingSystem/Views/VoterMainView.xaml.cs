@@ -13,6 +13,14 @@ namespace EVotingSystem.Views
         public VoterMainView()
         {
             InitializeComponent();
+
+            if (SessionContext.CurrentUser is not Voter)
+            {
+                ((MainWindow)Application.Current.MainWindow)
+                    .MainContent.Content = new LoginCertificateView();
+                return;
+            }
+
             LoadActiveVotings();
         }
 
@@ -22,7 +30,16 @@ namespace EVotingSystem.Views
             VotingsList.ItemsSource = votings;
 
         }
+        private void Logout_Click(object sender, RoutedEventArgs e)
+        {
+            // Clear session
+            SessionContext.CurrentUser = null;
+            SessionContext.UserCertificate = null;
 
+            // Navigate to login
+            ((MainWindow)Application.Current.MainWindow)
+                .MainContent.Content = new LoginCertificateView();
+        }
 
         private void VotingsList_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {

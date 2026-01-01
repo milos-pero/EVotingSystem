@@ -40,6 +40,11 @@ namespace EVotingSystem.Views
             EndHourBox.SelectedIndex = end.Hour;
             EndMinuteBox.SelectedIndex = end.Minute;
         }
+        private void Back_Click(object sender, RoutedEventArgs e)
+        {
+            ((MainWindow)Application.Current.MainWindow)
+                .MainContent.Content = new OrganizerMainView();
+        }
 
         private void Create_Click(object sender, RoutedEventArgs e)
         {

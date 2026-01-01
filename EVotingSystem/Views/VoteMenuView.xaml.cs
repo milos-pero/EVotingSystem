@@ -48,6 +48,11 @@ namespace EVotingSystem.Views
             UpdateVoteButtonState();
 
         }
+        private void Back_Click(object sender, RoutedEventArgs e)
+        {
+            ((MainWindow)Application.Current.MainWindow)
+                .MainContent.Content = new VoterMainView();
+        }
 
         private void BuildOptions()
         {
@@ -76,7 +81,7 @@ namespace EVotingSystem.Views
 
             if (selectedRadio == null)
             {
-                MessageBox.Show("Please select an option.");
+                MessageBox.Show("Morate izabrati jednu opciju.");
                 return;
             }
 
@@ -88,7 +93,7 @@ namespace EVotingSystem.Views
             bool alreadyVoted = VoteRepository.HasVoterAlreadyVoted(voter.Id, voting.Id);
             if (alreadyVoted)
             {
-                MessageBox.Show("You have already voted in this election.");
+                MessageBox.Show("Vec ste glasali.");
                 return;
             }
 
@@ -101,14 +106,14 @@ namespace EVotingSystem.Views
                     voterCert,
                     organizerCert);
 
-                MessageBox.Show("Your vote has been successfully recorded.");
+                MessageBox.Show("Uspesno ste glasali.");
 
                 ((MainWindow)Application.Current.MainWindow)
                     .MainContent.Content = new VoterMainView();
             }
             catch (System.Exception ex)
             {
-                MessageBox.Show($"Voting failed: {ex.Message}");
+                MessageBox.Show($"Glasanje neuspesno: {ex.Message}");
             }
         }
         private void UpdateVoteButtonState()

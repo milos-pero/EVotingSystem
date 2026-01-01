@@ -27,7 +27,7 @@ namespace EVotingSystem.Views
 
             if (string.IsNullOrWhiteSpace(username) || string.IsNullOrWhiteSpace(password))
             {
-                MessageBox.Show("Please enter username and password.");
+                MessageBox.Show("Unesite korisnicko ime i lozinku.");
                 return;
             }
 
@@ -38,14 +38,14 @@ namespace EVotingSystem.Views
 
                 if (user == null)
                 {
-                    MessageBox.Show("User not found.");
+                    MessageBox.Show("Korisnik nije pronadjen.");
                     return;
                 }
 
                 // Verify password hash (assuming your User object stores password in plain for now)
                 if (user.Password != password)
                 {
-                    MessageBox.Show("Incorrect password.");
+                    MessageBox.Show("Pogresna lozinka.");
                     return;
                 }
 
@@ -55,7 +55,7 @@ namespace EVotingSystem.Views
                 // Load the user's PFX file
                 if (!File.Exists(user.CertificatePath!))
                 {
-                    MessageBox.Show("Certificate file not found.");
+                    MessageBox.Show("Sertifikat nije pronadjen.");
                     return;
                 }
 
@@ -73,7 +73,7 @@ namespace EVotingSystem.Views
                 // Ensure the public certificate from Step 1 matches the full certificate
                 if (!fullCert.Thumbprint.Equals(publicCertificate.Thumbprint, StringComparison.OrdinalIgnoreCase))
                 {
-                    MessageBox.Show("The selected certificate does not belong to this user.");
+                    MessageBox.Show("Izabran sertifikat ne odgovara ovom korisniku.");
                     return;
                 }
 
@@ -95,7 +95,7 @@ namespace EVotingSystem.Views
             }
             catch (Exception ex)
             {
-                MessageBox.Show($"Login failed: {ex.Message}");
+                MessageBox.Show($"Prijava neuspesna: {ex.Message}");
             }
         }
 

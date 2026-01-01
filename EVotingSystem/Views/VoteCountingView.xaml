@@ -8,8 +8,18 @@
 			<RowDefinition Height="*"/>
 		</Grid.RowDefinitions>
 
+		<!-- BACK BUTTON (TOP-LEFT, FLOATING) -->
+		<Button Content="← Nazad"
+                Width="100"
+                HorizontalAlignment="Left"
+                VerticalAlignment="Top"
+                Margin="0,0,0,0"
+                Click="Back_Click"/>
+
 		<!-- HEADER -->
-		<StackPanel Margin="0,0,0,20">
+		<StackPanel Margin="0,40,0,20">
+			<!-- push content down a bit -->
+
 			<TextBlock Text="Prebrojavanje glasova"
                        FontSize="26"
                        FontWeight="Bold"/>

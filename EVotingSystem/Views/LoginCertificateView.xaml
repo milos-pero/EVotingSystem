@@ -10,33 +10,33 @@
                    HorizontalAlignment="Center"
                    Margin="0,0,0,30"/>
 
-		<TextBlock Text="Step 1: Digital Certificate"
+		<TextBlock Text="Korak 1: Digitalni Sertifikat"
                    FontSize="16"
                    FontWeight="SemiBold"
                    HorizontalAlignment="Center"
                    Margin="0,0,0,20"/>
 
-		<Button Content="Select Certificate (.pfx)"
+		<Button Content="Izaberite Sertifikat (.cer)"
                 Height="35"
                 Margin="0,0,0,10"
                 Click="SelectCertificate_Click"/>
 
 		<TextBlock x:Name="CertificateStatusText"
-                   Text="No certificate selected"
+                   Text="Sertifikat nije izabran"
                    Foreground="Gray"
                    TextAlignment="Center"
                    Margin="0,0,0,20"/>
 
 		<Button x:Name="ContinueButton"
-                Content="Continue"
+                Content="Nastavi"
                 Height="35"
                 IsEnabled="False"
                 Margin="0,0,0,15"
                 Click="Continue_Click"/>
 
 		<TextBlock HorizontalAlignment="Center">
-            <Run Text="Don't have an account? "/>
-            <Run Text="Register!"
+            <Run Text="Nemate profil? "/>
+            <Run Text="Registrujte se!"
                  Foreground="Blue"
                  TextDecorations="Underline"
                  Cursor="Hand"

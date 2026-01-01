@@ -3,11 +3,23 @@
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
 
 	<Grid Margin="40">
+
+		<!-- Logout button (top-right) -->
+		<Button Content="Odjava"
+                HorizontalAlignment="Right"
+                VerticalAlignment="Top"
+                Padding="12,6"
+                Background="#C0392B"
+                Foreground="White"
+                FontWeight="Bold"
+                Click="Logout_Click"/>
+
+		<!-- Center content -->
 		<StackPanel HorizontalAlignment="Center"
                     VerticalAlignment="Center"
                     Width="300">
 
-			<TextBlock Text="Organizer panel"
+			<TextBlock Text="Organizator"
                        FontSize="26"
                        FontWeight="Bold"
                        HorizontalAlignment="Center"
@@ -25,5 +37,6 @@
                     Click="ViewVotings_Click"/>
 
 		</StackPanel>
+
 	</Grid>
 </UserControl>

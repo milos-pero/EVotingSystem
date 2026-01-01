@@ -3,55 +3,69 @@
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              Height="Auto" Width="Auto">
 
-	<ScrollViewer VerticalScrollBarVisibility="Auto">
-		<StackPanel Margin="20" Width="400">
+	<Grid>
 
-			<TextBlock Text="Kreiranje glasanja"
-                       FontSize="18"
-                       FontWeight="Bold"
-                       Margin="0,0,0,15"/>
+		<!-- Back button (top-left) -->
+		<Button Content="← Nazad"
+                HorizontalAlignment="Left"
+                VerticalAlignment="Top"
+                Margin="10"
+                Padding="10,5"
+                FontWeight="Bold"
+                Click="Back_Click"/>
 
-			<!-- Title -->
-			<TextBlock Text="Naslov"/>
-			<TextBox x:Name="TitleTextBox" Margin="0,0,0,10"/>
+		<!-- Main content -->
+		<ScrollViewer VerticalScrollBarVisibility="Auto" Margin="0,40,0,0">
+			<StackPanel Margin="20" Width="400">
 
-			<!-- Description -->
-			<TextBlock Text="Opis"/>
-			<TextBox x:Name="DescriptionTextBox"
-                     Margin="0,0,0,10"
-                     Height="60"
-                     TextWrapping="Wrap"
-                     AcceptsReturn="True"/>
+				<TextBlock Text="Kreiranje glasanja"
+                           FontSize="18"
+                           FontWeight="Bold"
+                           Margin="0,0,0,15"/>
 
-			<!-- Start time -->
-			<TextBlock Text="Početak glasanja"/>
-			<StackPanel Orientation="Horizontal" Margin="0,0,0,10">
-				<DatePicker x:Name="StartDatePicker" Width="150"/>
-				<ComboBox x:Name="StartHourBox" Width="60" Margin="10,0,0,0"/>
-				<ComboBox x:Name="StartMinuteBox" Width="60" Margin="5,0,0,0"/>
+				<!-- Title -->
+				<TextBlock Text="Naslov"/>
+				<TextBox x:Name="TitleTextBox" Margin="0,0,0,10"/>
+
+				<!-- Description -->
+				<TextBlock Text="Opis"/>
+				<TextBox x:Name="DescriptionTextBox"
+                         Margin="0,0,0,10"
+                         Height="60"
+                         TextWrapping="Wrap"
+                         AcceptsReturn="True"/>
+
+				<!-- Start time -->
+				<TextBlock Text="Početak glasanja"/>
+				<StackPanel Orientation="Horizontal" Margin="0,0,0,10">
+					<DatePicker x:Name="StartDatePicker" Width="150"/>
+					<ComboBox x:Name="StartHourBox" Width="60" Margin="10,0,0,0"/>
+					<ComboBox x:Name="StartMinuteBox" Width="60" Margin="5,0,0,0"/>
+				</StackPanel>
+
+				<!-- End time -->
+				<TextBlock Text="Kraj glasanja"/>
+				<StackPanel Orientation="Horizontal" Margin="0,0,0,15">
+					<DatePicker x:Name="EndDatePicker" Width="150"/>
+					<ComboBox x:Name="EndHourBox" Width="60" Margin="10,0,0,0"/>
+					<ComboBox x:Name="EndMinuteBox" Width="60" Margin="5,0,0,0"/>
+				</StackPanel>
+
+				<!-- Options -->
+				<TextBlock Text="Opcije (2–5)"/>
+				<TextBox x:Name="Option1TextBox" Margin="0,2"/>
+				<TextBox x:Name="Option2TextBox" Margin="0,2"/>
+				<TextBox x:Name="Option3TextBox" Margin="0,2"/>
+				<TextBox x:Name="Option4TextBox" Margin="0,2"/>
+				<TextBox x:Name="Option5TextBox" Margin="0,2"/>
+
+				<!-- Create button -->
+				<Button Content="Kreiraj glasanje"
+                        Margin="0,20,0,0"
+                        Height="35"
+                        Click="Create_Click"/>
 			</StackPanel>
+		</ScrollViewer>
 
-			<!-- End time -->
-			<TextBlock Text="Kraj glasanja"/>
-			<StackPanel Orientation="Horizontal" Margin="0,0,0,15">
-				<DatePicker x:Name="EndDatePicker" Width="150"/>
-				<ComboBox x:Name="EndHourBox" Width="60" Margin="10,0,0,0"/>
-				<ComboBox x:Name="EndMinuteBox" Width="60" Margin="5,0,0,0"/>
-			</StackPanel>
-
-			<!-- Options -->
-			<TextBlock Text="Opcije (2–5)"/>
-			<TextBox x:Name="Option1TextBox" Margin="0,2"/>
-			<TextBox x:Name="Option2TextBox" Margin="0,2"/>
-			<TextBox x:Name="Option3TextBox" Margin="0,2"/>
-			<TextBox x:Name="Option4TextBox" Margin="0,2"/>
-			<TextBox x:Name="Option5TextBox" Margin="0,2"/>
-
-			<!-- Create button -->
-			<Button Content="Kreiraj glasanje"
-                    Margin="0,20,0,0"
-                    Height="35"
-                    Click="Create_Click"/>
-		</StackPanel>
-	</ScrollViewer>
+	</Grid>
 </UserControl>

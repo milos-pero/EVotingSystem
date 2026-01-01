@@ -2,29 +2,40 @@
              xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
 
-	<ScrollViewer>
-		<StackPanel Margin="30">
+	<Grid>
+		<Button Content="← Nazad"
+                HorizontalAlignment="Left"
+                VerticalAlignment="Top"
+                Margin="10"
+                Padding="12,6"
+                Click="Back_Click"/>
 
-			<TextBlock x:Name="TitleText"
-                       FontSize="26"
-                       FontWeight="Bold"
-                       Margin="0,0,0,10"/>
+		<!-- MAIN CONTENT -->
+		<ScrollViewer Margin="0,50,0,0">
+			<StackPanel Margin="30">
 
-			<TextBlock x:Name="DescriptionText"
-                       FontSize="14"
-                       TextWrapping="Wrap"
-                       Margin="0,0,0,10"/>
+				<TextBlock x:Name="TitleText"
+                           FontSize="26"
+                           FontWeight="Bold"
+                           Margin="0,0,0,10"/>
 
-			<TextBlock x:Name="PeriodText"
-                       Foreground="Gray"
-                       Margin="0,0,0,20"/>
+				<TextBlock x:Name="DescriptionText"
+                           FontSize="14"
+                           TextWrapping="Wrap"
+                           Margin="0,0,0,10"/>
 
-			<StackPanel x:Name="OptionsPanel" />
+				<TextBlock x:Name="PeriodText"
+                           Foreground="Gray"
+                           Margin="0,0,0,20"/>
 
-			<Button x:Name="VoteButton"
-            Content="Glasaj"
-            Click="Vote_Click"/>
+				<StackPanel x:Name="OptionsPanel"/>
 
-		</StackPanel>
-	</ScrollViewer>
+				<Button x:Name="VoteButton"
+                        Content="Glasaj"
+                        Click="Vote_Click"
+                        Margin="0,20,0,0"/>
+			</StackPanel>
+		</ScrollViewer>
+
+	</Grid>
 </UserControl>
