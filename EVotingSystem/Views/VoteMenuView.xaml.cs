@@ -116,6 +116,51 @@ namespace EVotingSystem.Views
                 MessageBox.Show($"Glasanje neuspesno: {ex.Message}");
             }
         }
+        private void VerifyVote_Click(object sender, RoutedEventArgs e)
+        {
+            // Get the vote the voter cast in this election
+            var vote = VoteRepository.GetVotesForVoting(voting.Id)
+                                     .FirstOrDefault(v => v.VoterId == voter.Id);
+
+            if (vote == null)
+            {
+                MessageBox.Show("Vaš glas još nije zabeležen.");
+                return;
+            }
+
+            // Get metadata
+            var metadata = VoteRepository.GetMetadataForVoting(voting.Id)
+                                         .FirstOrDefault(m => m.VoteId == vote.VoteId);
+
+            if (metadata == null)
+            {
+                MessageBox.Show("Ne postoji validna potvrda za vaš glas.");
+                return;
+            }
+
+            // Verify HMAC
+            bool valid = VerifyMetadataHmac(metadata);
+
+            if (valid)
+            {
+                MessageBox.Show($"Vaš glas je uspešno zabeležen i validan.\nID glasa: {vote.VoteId}");
+            }
+            else
+            {
+                MessageBox.Show($"Vaš glas je pronađen, ali ne može biti potvrđen (nevažeći HMAC).");
+            }
+        }
+        private bool VerifyMetadataHmac(VoteMetadata meta)
+        {
+            using var hmac = new System.Security.Cryptography.HMACSHA256(Security.HmacKey.MetadataHmacKey);
+
+            var data = System.Text.Encoding.UTF8.GetBytes(
+                $"{meta.VoteId}|{meta.VotingId}|{meta.VoterId}|{meta.Timestamp:o}");
+
+            var computed = hmac.ComputeHash(data);
+            return computed.SequenceEqual(meta.Hmac);
+        }
+
         private void UpdateVoteButtonState()
         {
             switch (voting.Status)
