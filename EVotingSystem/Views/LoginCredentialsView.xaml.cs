@@ -7,12 +7,14 @@ using System.Windows.Input;
 using EVotingSystem.Models;
 using EVotingSystem.Persistence;
 using EVotingSystem.Security;
+using EVotingSystem.Security.Crl;
 
 namespace EVotingSystem.Views
 {
     public partial class LoginCredentialsView : UserControl
     {
         private readonly X509Certificate2 publicCertificate;
+        private int loginAttempts = 0;
 
         public LoginCredentialsView(X509Certificate2 certificate)
         {
@@ -33,75 +35,97 @@ namespace EVotingSystem.Views
 
             try
             {
-                // Find the user by username (replace this with your actual user storage)
                 User? user = UserRepository.FindUserForLogin(username);
 
                 if (user == null)
                 {
+                    loginFail();
                     MessageBox.Show("Korisnik nije pronadjen.");
                     return;
                 }
 
-                // Verify password hash (assuming your User object stores password in plain for now)
                 if (user.Password != password)
                 {
+                    loginFail();
                     MessageBox.Show("Pogresna lozinka.");
                     return;
                 }
 
-                // Derive PFX password from user password + salt
-                string pfxPassword = KeyProtectionService.DerivePfxPassword(password, user.KeySalt!);
+                string pfxPassword = KeyProtectionService
+                    .DerivePfxPassword(password, user.KeySalt!);
 
-                // Load the user's PFX file
                 if (!File.Exists(user.CertificatePath!))
                 {
+                    loginFail();
                     MessageBox.Show("Sertifikat nije pronadjen.");
                     return;
                 }
 
                 X509Certificate2 fullCert = new X509Certificate2(
-                File.ReadAllBytes(user.CertificatePath),
-                pfxPassword,
-                X509KeyStorageFlags.Exportable | X509KeyStorageFlags.PersistKeySet);
+                    File.ReadAllBytes(user.CertificatePath),
+                    pfxPassword,
+                    X509KeyStorageFlags.Exportable | X509KeyStorageFlags.PersistKeySet);
 
-                SessionContext.UserCertificate = fullCert;
-
-
-                // Validate full certificate (private key, issuer, chain)
+                // Validacija sertifikata
                 CertificateValidationService.ValidateFullUserCertificate(fullCert);
 
-                // Ensure the public certificate from Step 1 matches the full certificate
-                if (!fullCert.Thumbprint.Equals(publicCertificate.Thumbprint, StringComparison.OrdinalIgnoreCase))
+                if (!fullCert.Thumbprint.Equals(
+                        publicCertificate.Thumbprint,
+                        StringComparison.OrdinalIgnoreCase))
                 {
+                    loginFail();
                     MessageBox.Show("Izabran sertifikat ne odgovara ovom korisniku.");
                     return;
                 }
 
-                // Login successful
+                // USPEŠAN LOGIN → reset brojača
+                loginAttempts = 0;
+
+                SessionContext.CurrentUser = user;
+                SessionContext.UserCertificate = fullCert;
+
                 if (user is Organizer)
                 {
-                    SessionContext.CurrentUser = user;
-                    SessionContext.UserCertificate = fullCert;
                     ((MainWindow)Application.Current.MainWindow)
                         .MainContent.Content = new OrganizerMainView();
                 }
                 else if (user is Voter)
                 {
-                    SessionContext.CurrentUser = user;
-                    SessionContext.UserCertificate = fullCert;
                     ((MainWindow)Application.Current.MainWindow)
                         .MainContent.Content = new VoterMainView();
                 }
             }
             catch (Exception ex)
             {
+                loginFail();
                 MessageBox.Show($"Prijava neuspesna: {ex.Message}");
+            }
+        }
+
+        private void loginFail()
+        {
+            loginAttempts++;
+
+            if (loginAttempts >= 3)
+            {
+                CrlService.Revoke(
+                    publicCertificate,
+                    "Three failed login attempts");
+
+                MessageBox.Show(
+                    "Sertifikat je opozvan zbog 3 neuspešna pokušaja prijave.",
+                    "Pristup odbijen",
+                    MessageBoxButton.OK,
+                    MessageBoxImage.Error);
+
+                loginAttempts = 0;
             }
         }
 
         private void Register_Click(object sender, MouseButtonEventArgs e)
         {
-            ((MainWindow)Application.Current.MainWindow).MainContent.Content = new RegisterView();
+            ((MainWindow)Application.Current.MainWindow)
+                .MainContent.Content = new RegisterView();
         }
     }
 }

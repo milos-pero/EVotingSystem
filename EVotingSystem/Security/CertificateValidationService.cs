@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Security.Cryptography.X509Certificates;
 using EVotingSystem.Security.Ca;
+using EVotingSystem.Security.Crl;
 
 namespace EVotingSystem.Security
 {
@@ -39,6 +40,9 @@ namespace EVotingSystem.Security
 
             if (!chain.Build(cert))
                 throw new InvalidOperationException("Certificate chain validation failed.");
+
+            if (CrlService.IsRevoked(cert))
+                throw new InvalidOperationException("Sertifikat je opozvan (CRL).");
 
             // Ensure certificate was issued by a valid EVoting CA
             string issuer = cert.Issuer;
