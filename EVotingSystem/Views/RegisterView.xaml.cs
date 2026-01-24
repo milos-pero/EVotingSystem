@@ -28,7 +28,7 @@ namespace EVotingSystem.Views
         public RegisterView()
         {
             InitializeComponent();
-            RegisterButton.IsEnabled = false; // Disable until role selected
+            RegisterButton.IsEnabled = false;
         }
 
         private void Organizer_Click(object sender, RoutedEventArgs e)
@@ -57,9 +57,8 @@ namespace EVotingSystem.Views
             if (newUser == null)
                 return;
 
-            // --- VALIDATE UNIQUENESS ---
 
-            // Check for duplicate names across all users
+            // Check for duplicate names
             bool nameExists = UserRepository.GetAllUsers().Any(u =>
             {
                 if (newUser is Voter nv && u is Voter v)
@@ -78,7 +77,7 @@ namespace EVotingSystem.Views
                 return;
             }
 
-            // For organizers: also check duplicate OrganizationId
+            // Check duplicate OrganizationId
             if (newUser is Organizer newOrg)
             {
                 bool idExists = UserRepository.GetAllUsers().OfType<Organizer>()
@@ -91,7 +90,6 @@ namespace EVotingSystem.Views
                 }
             }
 
-            // --- CONTINUE REGISTRATION ---
             byte[] salt = KeyProtectionService.GenerateSalt();
             newUser.KeySalt = salt;
 
@@ -148,7 +146,7 @@ namespace EVotingSystem.Views
                 }
             }
 
-            return null; // should never happen if button is disabled until selection
+            return null;
         }
     }
 }

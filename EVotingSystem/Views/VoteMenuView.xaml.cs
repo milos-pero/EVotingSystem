@@ -87,9 +87,8 @@ namespace EVotingSystem.Views
 
             string selectedOption = selectedRadio.Content.ToString()!;
 
-            // -----------------------------
             // Prevent double voting
-            // -----------------------------
+
             bool alreadyVoted = VoteRepository.HasVoterAlreadyVoted(voter.Id, voting.Id);
             if (alreadyVoted)
             {
@@ -118,7 +117,7 @@ namespace EVotingSystem.Views
         }
         private void VerifyVote_Click(object sender, RoutedEventArgs e)
         {
-            // Get the vote the voter cast in this election
+            // Get vote
             var vote = VoteRepository.GetVotesForVoting(voting.Id)
                                      .FirstOrDefault(v => v.VoterId == voter.Id);
 

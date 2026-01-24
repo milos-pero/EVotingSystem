@@ -12,12 +12,8 @@ namespace EVotingSystem.Models
 
         public DateTime StartTime { get; set; }
         public DateTime EndTime { get; set; }
-
-
-        // 2–5 options
         public List<string> Options { get; set; } = new();
 
-        // Derived status (not persisted, computed)
         public VotingStatus Status
         {
             get

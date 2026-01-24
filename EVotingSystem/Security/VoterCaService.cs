@@ -11,7 +11,7 @@ namespace EVotingSystem.Security.Ca
 
         private const string CertFolder = "Certificates";
         private const string VoterCaFile = "VoterCA.pfx";
-        private const string VoterCaPassword = "VoterCAPassword!"; // can later derive dynamically
+        private const string VoterCaPassword = "voter!";
 
         public static X509Certificate2 GetOrCreateCa()
         {

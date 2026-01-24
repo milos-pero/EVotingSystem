@@ -35,14 +35,14 @@ namespace EVotingSystem.Views
 
             try
             {
-                // 1️⃣ Load the certificate from the selected file
+                // 1️. Load the certificate from the selected file
                 SelectedCertificatePath = dialog.FileName;
                 SelectedCertificate = new X509Certificate2(File.ReadAllBytes(SelectedCertificatePath));
 
-                // 2️⃣ Validate Step 1: expiry, issuer, chain (no private key required)
+                // 2️. check expiry, issuer, chain from cert file
                 CertificateValidationService.ValidatePublicUserCertificate(SelectedCertificate);
 
-                // 3️⃣ Update UI
+                // 3️. Update UI
                 CertificateStatusText.Text = "Sertifikat validan ✔";
                 CertificateStatusText.Foreground = Brushes.Green;
                 ContinueButton.IsEnabled = true;
@@ -62,7 +62,7 @@ namespace EVotingSystem.Views
             if (SelectedCertificate == null || SelectedCertificatePath == null)
                 return;
 
-            // Navigate to credentials step, passing the loaded certificate
+            // login step 2
             ((MainWindow)Application.Current.MainWindow).MainContent.Content =
                 new LoginCredentialsView(SelectedCertificate);
         }

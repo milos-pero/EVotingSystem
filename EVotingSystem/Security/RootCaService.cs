@@ -9,7 +9,7 @@ namespace EVotingSystem.Security.Ca
         private static X509Certificate2 rootCa;
         private const string CertFolder = "Certificates";
         private const string RootCaFile = "RootCA.pfx";
-        private const string RootCaPassword = "RootCAPassword123!"; // can later derive dynamically
+        private const string RootCaPassword = "root";
 
         public static X509Certificate2 GetOrCreateRootCa()
         {

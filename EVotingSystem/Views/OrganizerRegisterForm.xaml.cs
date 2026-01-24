@@ -15,9 +15,6 @@ using System.Windows.Shapes;
 
 namespace EVotingSystem.Views
 {
-    /// <summary>
-    /// Interaction logic for OrganizerRegisterForm.xaml
-    /// </summary>
     public partial class OrganizerRegisterForm : UserControl
     {
         public OrganizerRegisterForm()

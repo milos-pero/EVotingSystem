@@ -8,7 +8,7 @@ namespace EVotingSystem.Models
 {
     public enum UserType
     {
-        None,       // Default, nothing selected
+        None,
         Organizer,
         Voter
     }

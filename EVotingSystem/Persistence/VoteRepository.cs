@@ -29,9 +29,7 @@ namespace EVotingSystem.Persistence
                 File.WriteAllText(MetadataFile, "[]");
         }
 
-        // ---------------------------
-        // PUBLIC API
-        // ---------------------------
+        // PUBLIC
 
         public static void AddVote(EncryptedVote vote, VoteMetadata metadata)
         {
@@ -60,7 +58,7 @@ namespace EVotingSystem.Persistence
         }
         public static bool HasVoterAlreadyVoted(Guid voterId, Guid votingId)
         {
-            var votes = LoadAllVotes(); // read all encrypted votes
+            var votes = LoadAllVotes();
             return votes.Any(v => v.VoterId == voterId && v.VotingId == votingId);
         }
         public static List<VoteMetadata> GetMetadataForVoting(Guid votingId)
@@ -71,9 +69,7 @@ namespace EVotingSystem.Persistence
         }
 
 
-        // ---------------------------
-        // INTERNAL STORAGE
-        // ---------------------------
+        // PRIVATE
 
         private static List<EncryptedVote> LoadAllVotes()
         {

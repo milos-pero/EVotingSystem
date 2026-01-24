@@ -30,7 +30,7 @@ namespace EVotingSystem.Security
                     X509KeyUsageFlags.DigitalSignature | X509KeyUsageFlags.KeyEncipherment,
                     true));
 
-            // Role extension
+            // Extensions
             request.CertificateExtensions.Add(
                 new X509Extension(
                     "1.2.3.4.5.6.7.8.1",

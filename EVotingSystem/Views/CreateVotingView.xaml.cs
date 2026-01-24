@@ -14,7 +14,8 @@ namespace EVotingSystem.Views
         {
             InitializeComponent();
 
-            // Populate hours & minutes
+            //Calendar setup
+
             for (int h = 0; h < 24; h++)
             {
                 StartHourBox.Items.Add(h.ToString("D2"));
@@ -27,7 +28,6 @@ namespace EVotingSystem.Views
                 EndMinuteBox.Items.Add(m.ToString("D2"));
             }
 
-            // Defaults for easy testing
             var now = DateTime.Now;
             var end = now.AddMinutes(10);
 

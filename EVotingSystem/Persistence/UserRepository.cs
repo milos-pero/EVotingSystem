@@ -20,9 +20,7 @@ namespace EVotingSystem.Persistence
                 File.WriteAllText(UsersFile, "[]");
         }
 
-        // ---------------------------
-        // PUBLIC API
-        // ---------------------------
+        // PUBLIC
 
         public static void AddUser(User user)
         {
@@ -64,9 +62,7 @@ namespace EVotingSystem.Persistence
         }
 
 
-        // ---------------------------
-        // INTERNAL STORAGE
-        // ---------------------------
+        // PRIVATE
 
         private static List<UserDto> LoadAllInternal()
         {
@@ -83,10 +79,6 @@ namespace EVotingSystem.Persistence
 
             File.WriteAllText(UsersFile, json);
         }
-
-        // ---------------------------
-        // DTO MAPPING
-        // ---------------------------
 
         private static UserDto ToDto(User user)
         {
@@ -188,9 +180,7 @@ namespace EVotingSystem.Persistence
             return null;
         }
 
-        // ---------------------------
         // DTO CLASS
-        // ---------------------------
 
         private class UserDto
         {

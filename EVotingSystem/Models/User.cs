@@ -16,9 +16,6 @@
     {
         public string OrganizationName { get; set; }
         public string OrganizationId { get; set; }
-
-        // Organizer-specific methods
-        // public void CreateElection() { ... }
     }
     public class Voter : User
     {

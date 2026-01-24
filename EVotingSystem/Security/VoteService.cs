@@ -83,7 +83,7 @@ namespace EVotingSystem.Security
                 Hmac = hmacValue
             };
 
-            // 8. Persist vote
+            // 8. Export vote
 
             VoteRepository.AddVote(encryptedVoteObj, metadata);
         }

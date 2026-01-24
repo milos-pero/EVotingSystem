@@ -11,7 +11,7 @@ namespace EVotingSystem.Security.Ca
 
         private const string CertFolder = "Certificates";
         private const string OrganizerCaFile = "OrganizerCA.pfx";
-        private const string OrganizerCaPassword = "OrganizerCAPassword!"; // can later derive dynamically
+        private const string OrganizerCaPassword = "organizer!";
 
         public static X509Certificate2 GetOrCreateCa()
         {
@@ -57,7 +57,7 @@ namespace EVotingSystem.Security.Ca
 
             organizerCa = cert.CopyWithPrivateKey(rsa);
 
-            // Save to disk as PFX
+            // Export as PFX
             File.WriteAllBytes(path, organizerCa.Export(X509ContentType.Pfx, OrganizerCaPassword));
 
             return organizerCa;

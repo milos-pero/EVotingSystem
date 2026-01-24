@@ -7,11 +7,8 @@ namespace EVotingSystem.Security
 {
     public static class CertificateValidationService
     {
-        /// <summary>
-        /// Validates a user certificate's public part only.
-        /// This is used when the user selects a .cer file in Step 1.
-        /// Checks expiry, chain, and issuer, but does NOT require private key or PFX password.
-        /// </summary>
+        // Validate a public cert file
+        // Check expiry, chain, and issuer
         public static void ValidatePublicUserCertificate(X509Certificate2 cert)
         {
             if (cert == null)
@@ -34,7 +31,7 @@ namespace EVotingSystem.Security
             // Add trusted Root CA
             chain.ChainPolicy.CustomTrustStore.Add(RootCaService.GetOrCreateRootCa());
 
-            // Add intermediate CAs
+            // Add CAs
             chain.ChainPolicy.ExtraStore.Add(OrganizerCaService.GetOrCreateCa());
             chain.ChainPolicy.ExtraStore.Add(VoterCaService.GetOrCreateCa());
 
@@ -50,20 +47,17 @@ namespace EVotingSystem.Security
                 throw new InvalidOperationException("Certificate issued by an invalid CA.");
         }
 
-        /// <summary>
-        /// Validates a full user certificate including private key.
-        /// This is used after the user enters their password and we can load the PFX.
-        /// Checks expiry, chain, issuer, and ensures private key is accessible with PFX password.
-        /// </summary>
+        // Validate PFX file
+        // Check expiry, chain, issuer, and gets private key with PFX password
         public static void ValidateFullUserCertificate(X509Certificate2 cert)
         {
             if (cert == null)
                 throw new InvalidOperationException("No certificate provided.");
 
-            // Step 1 checks (expiry, chain, issuer)
+            // check (expiry, chain, issuer)
             ValidatePublicUserCertificate(cert);
 
-            // Step 2: ensure private key exists
+            // ensure private key exists
             if (!cert.HasPrivateKey)
                 throw new InvalidOperationException("Certificate does not contain a private key.");
         }

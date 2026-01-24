@@ -66,7 +66,7 @@ namespace EVotingSystem.Views
                     pfxPassword,
                     X509KeyStorageFlags.Exportable | X509KeyStorageFlags.PersistKeySet);
 
-                // Validacija sertifikata
+                // PFX validation
                 CertificateValidationService.ValidateFullUserCertificate(fullCert);
 
                 if (!fullCert.Thumbprint.Equals(
@@ -78,7 +78,7 @@ namespace EVotingSystem.Views
                     return;
                 }
 
-                // USPEŠAN LOGIN → reset brojača
+                // reset counter
                 loginAttempts = 0;
 
                 SessionContext.CurrentUser = user;

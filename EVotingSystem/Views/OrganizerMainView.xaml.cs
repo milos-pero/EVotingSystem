@@ -37,7 +37,6 @@ namespace EVotingSystem.Views
             SessionContext.CurrentUser = null;
             SessionContext.UserCertificate = null;
 
-            // Navigate back to login
             ((MainWindow)Application.Current.MainWindow)
                 .MainContent.Content = new LoginCertificateView();
         }
