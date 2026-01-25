@@ -11,7 +11,7 @@ namespace EVotingSystem.Security.Ca
 
         private const string CertFolder = "Certificates";
         private const string OrganizerCaFile = "OrganizerCA.pfx";
-        private const string OrganizerCaPassword = "organizer!";
+        private const string OrganizerCaPassword = "organizer";
 
         public static X509Certificate2 GetOrCreateCa()
         {
@@ -22,42 +22,52 @@ namespace EVotingSystem.Security.Ca
 
             if (File.Exists(path))
             {
-                organizerCa = new X509Certificate2(path, OrganizerCaPassword,
-                    X509KeyStorageFlags.Exportable | X509KeyStorageFlags.PersistKeySet);
+                // Load PFX with private key (must be Exportable)
+                organizerCa = new X509Certificate2(
+                    path,
+                    OrganizerCaPassword,
+                    X509KeyStorageFlags.Exportable | X509KeyStorageFlags.PersistKeySet
+                );
                 return organizerCa;
             }
 
             var rootCa = RootCaService.GetOrCreateRootCa();
 
-            using RSA rsa = RSA.Create(4096);
+            // Create exportable RSA key
+            using var rsa = RSA.Create(4096);
 
             var request = new CertificateRequest(
                 "CN=EVoting Organizer CA",
                 rsa,
                 HashAlgorithmName.SHA256,
-                RSASignaturePadding.Pkcs1);
+                RSASignaturePadding.Pkcs1
+            );
 
             request.CertificateExtensions.Add(
                 new X509BasicConstraintsExtension(
                     certificateAuthority: true,
                     hasPathLengthConstraint: false,
                     pathLengthConstraint: 0,
-                    critical: true));
+                    critical: true)
+            );
 
             request.CertificateExtensions.Add(
                 new X509KeyUsageExtension(
                     X509KeyUsageFlags.KeyCertSign | X509KeyUsageFlags.CrlSign,
-                    true));
+                    true)
+            );
 
             var cert = request.Create(
                 rootCa,
                 DateTimeOffset.Now,
                 DateTimeOffset.Now.AddYears(5),
-                Guid.NewGuid().ToByteArray());
+                Guid.NewGuid().ToByteArray()
+            );
 
+            // Attach private key
             organizerCa = cert.CopyWithPrivateKey(rsa);
 
-            // Export as PFX
+            // Export as PFX with exportable private key
             File.WriteAllBytes(path, organizerCa.Export(X509ContentType.Pfx, OrganizerCaPassword));
 
             return organizerCa;

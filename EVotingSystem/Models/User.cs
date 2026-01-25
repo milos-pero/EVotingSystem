@@ -5,7 +5,7 @@
     {
         public int LoginAttempts { get; set; }
         public Guid Id { get; set; } = Guid.NewGuid();
-        public string Password { get; set; }
+        public string PasswordHash { get; set; }
 
         public byte[] KeySalt { get; set; }
         public string CertificatePath { get; set; }

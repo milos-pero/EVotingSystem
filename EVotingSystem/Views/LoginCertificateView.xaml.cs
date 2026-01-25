@@ -6,8 +6,9 @@ using System.Windows.Controls;
 using System.Windows.Input;
 using System.Windows.Media;
 using Microsoft.Win32;
-using EVotingSystem.Security.Ca;
 using EVotingSystem.Security;
+using EVotingSystem.Models;
+using EVotingSystem.Security.Ca;
 
 namespace EVotingSystem.Views
 {
@@ -15,6 +16,7 @@ namespace EVotingSystem.Views
     {
         public string? SelectedCertificatePath { get; private set; }
         public X509Certificate2? SelectedCertificate { get; private set; }
+        public UserType? CertificateUserType { get; private set; }
 
         public LoginCertificateView()
         {
@@ -35,36 +37,58 @@ namespace EVotingSystem.Views
 
             try
             {
-                // 1️. Load the certificate from the selected file
                 SelectedCertificatePath = dialog.FileName;
-                SelectedCertificate = new X509Certificate2(File.ReadAllBytes(SelectedCertificatePath));
+                SelectedCertificate = new X509Certificate2(
+                    File.ReadAllBytes(SelectedCertificatePath));
 
-                // 2️. check expiry, issuer, chain from cert file
-                CertificateValidationService.ValidatePublicUserCertificate(SelectedCertificate);
+                // 1. Standard certificate validation (expiry, chain, CRL)
+                CertificateValidationService
+                    .ValidatePublicUserCertificate(SelectedCertificate);
 
-                // 3️. Update UI
-                CertificateStatusText.Text = "Sertifikat validan ✔";
+                // 2. Determine user type from issuer
+                CertificateUserType = GetUserTypeFromIssuer(SelectedCertificate);
+
+                // 3. UI success
+                CertificateStatusText.Text =
+                    $"Sertifikat je validan ✔";
                 CertificateStatusText.Foreground = Brushes.Green;
                 ContinueButton.IsEnabled = true;
             }
-            catch
+            catch (Exception ex)
             {
-                SelectedCertificatePath = null;
                 SelectedCertificate = null;
-                CertificateStatusText.Text = "Sertifikat nije validan ✖";
+                SelectedCertificatePath = null;
+                CertificateUserType = null;
+
+                CertificateStatusText.Text = $"Sertifikat nije validan ✖\n{ex.Message}";
                 CertificateStatusText.Foreground = Brushes.Red;
                 ContinueButton.IsEnabled = false;
             }
         }
 
+        private static UserType GetUserTypeFromIssuer(X509Certificate2 cert)
+        {
+            var organizerCa = OrganizerCaService.GetOrCreateCa();
+            var voterCa = VoterCaService.GetOrCreateCa();
+
+            if (cert.IssuerName.RawData.SequenceEqual(organizerCa.SubjectName.RawData))
+                return UserType.Organizer;
+
+            if (cert.IssuerName.RawData.SequenceEqual(voterCa.SubjectName.RawData))
+                return UserType.Voter;
+
+            throw new InvalidOperationException(
+                "Sertifikat nije izdat od validnog CA.");
+        }
+
+
         private void Continue_Click(object sender, RoutedEventArgs e)
         {
-            if (SelectedCertificate == null || SelectedCertificatePath == null)
+            if (SelectedCertificate == null || CertificateUserType == null)
                 return;
 
-            // login step 2
             ((MainWindow)Application.Current.MainWindow).MainContent.Content =
-                new LoginCredentialsView(SelectedCertificate);
+                new LoginCredentialsView( SelectedCertificate);
         }
 
         private void Register_Click(object sender, MouseButtonEventArgs e)

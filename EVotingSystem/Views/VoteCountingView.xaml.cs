@@ -48,7 +48,7 @@ namespace EVotingSystem.Views
                 if (meta == null)
                     continue;
 
-                if (!VerifyMetadataHmac(meta))
+                if (!MetadataHmacService.VerifyVoteMetadata(meta))
                     continue;
 
                 string choice = DecryptVoteChoice(vote);
@@ -71,28 +71,6 @@ namespace EVotingSystem.Views
                 .ToList();
 
             TotalVotesText = $"Ukupan broj važećih glasova: {validVotes}";
-        }
-
-        private bool VerifyMetadataHmac(VoteMetadata meta)
-        {
-            using var hmac = new HMACSHA256(HmacKey.MetadataHmacKey);
-
-            var data = Encoding.UTF8.GetBytes(
-                $"{meta.VoteId}|{meta.VotingId}|{meta.VoterId}|{meta.Timestamp:o}");
-
-            var computed = hmac.ComputeHash(data);
-            return computed.SequenceEqual(meta.Hmac);
-        }
-        private bool VerifySignature(
-        EncryptedVote vote,
-        X509Certificate2 voterCertificate)
-        {
-            using RSA rsa = voterCertificate.GetRSAPublicKey()!;
-            return rsa.VerifyData(
-                vote.EncryptedChoice,
-                vote.Signature,
-                HashAlgorithmName.SHA256,
-                RSASignaturePadding.Pkcs1);
         }
         private byte[] DecryptAesKey(
         byte[] encryptedAesKey,
@@ -131,7 +109,7 @@ namespace EVotingSystem.Views
 
 
             // 3. Verify signature FIRST
-            if (!VerifySignature(vote, voterCert))
+            if (!SignatureValidationService.VerifyVoteSignature(vote, voterCert))
                 return null;
 
             // 4. Decrypt AES key

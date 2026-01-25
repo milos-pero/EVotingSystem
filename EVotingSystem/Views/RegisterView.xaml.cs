@@ -2,21 +2,12 @@
 using EVotingSystem.Persistence;
 using EVotingSystem.Security;
 using System;
-using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Security.Cryptography.X509Certificates;
-using System.Text;
-using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
-using System.Windows.Data;
-using System.Windows.Documents;
 using System.Windows.Input;
-using System.Windows.Media;
-using System.Windows.Media.Imaging;
-using System.Windows.Navigation;
-using System.Windows.Shapes;
 using Path = System.IO.Path;
 
 namespace EVotingSystem.Views
@@ -53,12 +44,12 @@ namespace EVotingSystem.Views
 
         private void Register_Click(object sender, RoutedEventArgs e)
         {
-            User newUser = GetUserFromForm();
+            // 1️ Load user and password
+            (User newUser, string password) = GetUserFromForm();
             if (newUser == null)
                 return;
 
-
-            // Check for duplicate names
+            // 2 Check duplicates
             bool nameExists = UserRepository.GetAllUsers().Any(u =>
             {
                 if (newUser is Voter nv && u is Voter v)
@@ -73,28 +64,34 @@ namespace EVotingSystem.Views
 
             if (nameExists)
             {
-                MessageBox.Show("A user with the same name or organization name already exists.");
+                MessageBox.Show("User with the same name already exists.");
                 return;
             }
 
-            // Check duplicate OrganizationId
             if (newUser is Organizer newOrg)
             {
-                bool idExists = UserRepository.GetAllUsers().OfType<Organizer>()
+                bool idExists = UserRepository.GetAllUsers()
+                    .OfType<Organizer>()
                     .Any(o => o.OrganizationId.Equals(newOrg.OrganizationId, StringComparison.OrdinalIgnoreCase));
 
                 if (idExists)
                 {
-                    MessageBox.Show("An organizer with the same identification number already exists.");
+                    MessageBox.Show("Organizer with the same ID already exists.");
                     return;
                 }
             }
 
+            // 3️ Generate salt
             byte[] salt = KeyProtectionService.GenerateSalt();
             newUser.KeySalt = salt;
 
-            string pfxPassword = KeyProtectionService.DerivePfxPassword(newUser.Password, salt);
+            // 4️ Hash password
+            newUser.PasswordHash = PasswordHashService.HashPassword(password, salt);
 
+            // 5️ Get PFX password
+            string pfxPassword = KeyProtectionService.DerivePfxPassword(password, salt);
+
+            // 6️ Issue certificate
             var cert = CertificateIssuer.IssueUserCertificate(newUser);
 
             string certDir = "Certificates";
@@ -109,26 +106,27 @@ namespace EVotingSystem.Views
             newUser.CertificatePath = pfxPath;
             newUser.PublicCertPath = cerPath;
 
+            // 7️ Save user
             UserRepository.AddUser(newUser);
+
             MessageBox.Show("User registered successfully!");
         }
 
-
-
-
-        private User GetUserFromForm()
+        private (User user, string plainPassword) GetUserFromForm()
         {
             if (selectedUserType == UserType.Organizer)
             {
                 var form = FormContent.Content as OrganizerRegisterForm;
                 if (form != null)
                 {
-                    return new Organizer
-                    {
-                        OrganizationName = form.OrganizationNameTextBox.Text,
-                        OrganizationId = form.OrganizationIdTextBox.Text,
-                        Password = form.PasswordBox.Password
-                    };
+                    return (
+                        new Organizer
+                        {
+                            OrganizationName = form.OrganizationNameTextBox.Text,
+                            OrganizationId = form.OrganizationIdTextBox.Text
+                        },
+                        form.PasswordBox.Password
+                    );
                 }
             }
             else if (selectedUserType == UserType.Voter)
@@ -136,17 +134,19 @@ namespace EVotingSystem.Views
                 var form = FormContent.Content as VoterRegisterForm;
                 if (form != null)
                 {
-                    return new Voter
-                    {
-                        FirstName = form.FirstNameTextBox.Text,
-                        LastName = form.LastNameTextBox.Text,
-                        Username = form.UsernameTextBox.Text,
-                        Password = form.PasswordBox.Password
-                    };
+                    return (
+                        new Voter
+                        {
+                            FirstName = form.FirstNameTextBox.Text,
+                            LastName = form.LastNameTextBox.Text,
+                            Username = form.UsernameTextBox.Text
+                        },
+                        form.PasswordBox.Password
+                    );
                 }
             }
 
-            return null;
+            return (null, string.Empty);
         }
     }
 }

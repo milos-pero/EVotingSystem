@@ -88,7 +88,7 @@ namespace EVotingSystem.Persistence
                 {
                     UserType = UserType.Organizer,
                     Id = o.Id,
-                    Password = o.Password,
+                    PasswordHash = o.PasswordHash,
                     KeySalt = o.KeySalt,
                     CertificatePath = o.CertificatePath,
                     PublicCertPath = o.PublicCertPath,
@@ -103,7 +103,7 @@ namespace EVotingSystem.Persistence
                 {
                     UserType = UserType.Voter,
                     Id = v.Id,
-                    Password = v.Password,
+                    PasswordHash = v.PasswordHash,
                     KeySalt = v.KeySalt,
                     CertificatePath = v.CertificatePath,
                     PublicCertPath = v.PublicCertPath,
@@ -129,7 +129,7 @@ namespace EVotingSystem.Persistence
                 return new Organizer
                 {
                     Id = dto.Id,
-                    Password = dto.Password,
+                    PasswordHash = dto.PasswordHash,
                     KeySalt = dto.KeySalt,
                     CertificatePath = dto.CertificatePath,
                     PublicCertPath = dto.PublicCertPath,
@@ -143,7 +143,7 @@ namespace EVotingSystem.Persistence
                 return new Voter
                 {
                     Id = dto.Id,
-                    Password = dto.Password,
+                    PasswordHash = dto.PasswordHash,
                     KeySalt = dto.KeySalt,
                     CertificatePath = dto.CertificatePath,
                     PublicCertPath = dto.PublicCertPath,
@@ -186,7 +186,7 @@ namespace EVotingSystem.Persistence
         {
             public UserType UserType { get; set; }
             public Guid Id { get; set; }
-            public string Password { get; set; }
+            public string PasswordHash { get; set; }
             public byte[] KeySalt { get; set; }
             public string CertificatePath { get; set; }
             public string PublicCertPath { get; set; }

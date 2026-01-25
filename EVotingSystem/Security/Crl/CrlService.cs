@@ -1,56 +1,138 @@
-﻿using System.IO;
+﻿using EVotingSystem.Security.Ca;
+using System;
+using System.Collections.Generic;
+using System.IO;
+using System.Linq;
+using System.Security.Cryptography;
 using System.Security.Cryptography.X509Certificates;
-using System.Text.Json;
 
 namespace EVotingSystem.Security.Crl
 {
     public static class CrlService
     {
-        private static string GetCrlPath(X509Certificate2 cert)
+        private const string CrlFolder = "Certificates/CRL";
+
+        private static string GetCrlPath(X509Certificate2 caCert)
         {
-            if (cert.Issuer.Contains("Organizer"))
-                return "Security/Crl/OrganizerCA_crl.json";
+            Directory.CreateDirectory(CrlFolder);
 
-            if (cert.Issuer.Contains("Voter"))
-                return "Security/Crl/VoterCA_crl.json";
+            if (caCert.Subject.Contains("EVoting Organizer CA", StringComparison.OrdinalIgnoreCase))
+                return Path.Combine(CrlFolder, "OrganizerCA.crl");
 
-            throw new InvalidOperationException("Unknown CA issuer.");
+            if (caCert.Subject.Contains("EVoting Voter CA", StringComparison.OrdinalIgnoreCase))
+                return Path.Combine(CrlFolder, "VoterCA.crl");
+
+            throw new InvalidOperationException("Unknown CA certificate.");
+        }
+
+        // Keep revoked serials in memory for simplicity
+        private static readonly Dictionary<string, HashSet<string>> RevokedByCa = new();
+
+        public static void RevokeCertificate(X509Certificate2 certToRevoke)
+        {
+            X509Certificate2 caCert;
+            string caPassword;
+
+            if (certToRevoke.Issuer.Contains("EVoting Organizer CA", StringComparison.OrdinalIgnoreCase))
+            {
+                caCert = OrganizerCaService.GetOrCreateCa();
+                caPassword = "organizer";
+            }
+            else if (certToRevoke.Issuer.Contains("EVoting Voter CA", StringComparison.OrdinalIgnoreCase))
+            {
+                caCert = VoterCaService.GetOrCreateCa();
+                caPassword = "voter";
+            }
+            else
+            {
+                throw new InvalidOperationException("Cannot revoke certificate: unknown CA issuer.");
+            }
+
+            // Load the CA with private key (Exportable)
+            var caCertWithKey = new X509Certificate2(
+                Path.Combine("Certificates", Path.GetFileName(caCert.PfxPath())),
+                caPassword,
+                X509KeyStorageFlags.Exportable | X509KeyStorageFlags.PersistKeySet
+            );
+
+            // Revoke the certificate
+            RevokeCertificateInternal(caCertWithKey, certToRevoke);
+        }
+
+        private static void RevokeCertificateInternal(X509Certificate2 caCertWithKey, X509Certificate2 certToRevoke)
+        {
+            string caName = caCertWithKey.Subject;
+
+            if (!RevokedByCa.ContainsKey(caName))
+                RevokedByCa[caName] = new HashSet<string>();
+
+            var revokedSerials = RevokedByCa[caName];
+            revokedSerials.Add(certToRevoke.SerialNumber);
+
+            GenerateCrl(caCertWithKey, revokedSerials);
+        }
+
+        private static void GenerateCrl(X509Certificate2 caCert, HashSet<string> revokedSerials)
+        {
+            string crlPath = GetCrlPath(caCert);
+
+            using RSA rsa = caCert.GetRSAPrivateKey()!;
+
+            // Create CRL in DER format manually
+            using var crlStream = new MemoryStream();
+            using var writer = new BinaryWriter(crlStream);
+
+            // This is simplified — for production you should generate proper X509 CRL structure
+            // For now, we just store serials in a simple format
+            writer.Write(DateTime.UtcNow.ToBinary());
+            writer.Write(revokedSerials.Count);
+            foreach (var serial in revokedSerials)
+            {
+                writer.Write(serial);
+            }
+
+            writer.Flush();
+
+            // Sign the data with RSA
+            var data = crlStream.ToArray();
+            var signature = rsa.SignData(data, HashAlgorithmName.SHA256, RSASignaturePadding.Pkcs1);
+
+            // Save CRL + signature to disk
+            using var fs = new FileStream(crlPath, FileMode.Create, FileAccess.Write);
+            fs.Write(data, 0, data.Length);
+            fs.Write(signature, 0, signature.Length);
         }
 
         public static bool IsRevoked(X509Certificate2 cert)
         {
-            var path = GetCrlPath(cert);
+            X509Certificate2 caCert;
 
-            if (!File.Exists(path))
-                return false;
+            if (cert.Issuer.Contains("EVoting Organizer CA", StringComparison.OrdinalIgnoreCase))
+                caCert = OrganizerCaService.GetOrCreateCa();
+            else if (cert.Issuer.Contains("EVoting Voter CA", StringComparison.OrdinalIgnoreCase))
+                caCert = VoterCaService.GetOrCreateCa();
+            else
+                throw new InvalidOperationException("Unknown CA issuer");
 
-            var list = JsonSerializer.Deserialize<List<RevokedCertificate>>(
-                File.ReadAllText(path)) ?? new();
-
-            return list.Any(r => r.SerialNumber == cert.SerialNumber);
+            return IsRevoked(caCert, cert);
         }
 
-        public static void Revoke(X509Certificate2 cert, string reason)
+        public static bool IsRevoked(X509Certificate2 caCert, X509Certificate2 cert)
         {
-            var path = GetCrlPath(cert);
-            Directory.CreateDirectory(Path.GetDirectoryName(path)!);
+            string caName = caCert.Subject;
+            return RevokedByCa.ContainsKey(caName) && RevokedByCa[caName].Contains(cert.SerialNumber);
+        }
+    }
 
-            var list = File.Exists(path)
-                ? JsonSerializer.Deserialize<List<RevokedCertificate>>(File.ReadAllText(path))!
-                : new List<RevokedCertificate>();
-
-            if (list.Any(r => r.SerialNumber == cert.SerialNumber))
-                return;
-
-            list.Add(new RevokedCertificate
-            {
-                SerialNumber = cert.SerialNumber,
-                RevokedAt = DateTime.Now,
-                Reason = reason
-            });
-
-            File.WriteAllText(path,
-                JsonSerializer.Serialize(list, new JsonSerializerOptions { WriteIndented = true }));
+    public static class X509Certificate2Extensions
+    {
+        public static string PfxPath(this X509Certificate2 cert)
+        {
+            if (cert.Subject.Contains("EVoting Organizer CA", StringComparison.OrdinalIgnoreCase))
+                return Path.Combine("Certificates", "OrganizerCA.pfx");
+            if (cert.Subject.Contains("EVoting Voter CA", StringComparison.OrdinalIgnoreCase))
+                return Path.Combine("Certificates", "VoterCA.pfx");
+            throw new InvalidOperationException("Unknown CA certificate.");
         }
     }
 }

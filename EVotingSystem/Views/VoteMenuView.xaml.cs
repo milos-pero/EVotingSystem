@@ -138,7 +138,16 @@ namespace EVotingSystem.Views
             }
 
             // Verify HMAC
-            bool valid = VerifyMetadataHmac(metadata);
+            bool valid = MetadataHmacService.VerifyVoteMetadata(metadata);
+
+            //verify signature
+            bool signatureValid = SignatureValidationService.VerifyVoteSignature(vote, voterCert);
+
+            if (!signatureValid)
+            {
+                MessageBox.Show("Potpis glasa nije validan.");
+                return;
+            }
 
             if (valid)
             {
@@ -148,16 +157,6 @@ namespace EVotingSystem.Views
             {
                 MessageBox.Show($"Vaš glas je pronađen, ali ne može biti potvrđen (nevažeći HMAC).");
             }
-        }
-        private bool VerifyMetadataHmac(VoteMetadata meta)
-        {
-            using var hmac = new System.Security.Cryptography.HMACSHA256(Security.HmacKey.MetadataHmacKey);
-
-            var data = System.Text.Encoding.UTF8.GetBytes(
-                $"{meta.VoteId}|{meta.VotingId}|{meta.VoterId}|{meta.Timestamp:o}");
-
-            var computed = hmac.ComputeHash(data);
-            return computed.SequenceEqual(meta.Hmac);
         }
 
         private void UpdateVoteButtonState()

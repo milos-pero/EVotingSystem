@@ -38,13 +38,23 @@ namespace EVotingSystem.Security
             if (!chain.Build(cert))
                 throw new InvalidOperationException("Certificate chain validation failed.");
 
+
             if (CrlService.IsRevoked(cert))
                 throw new InvalidOperationException("Sertifikat je opozvan (CRL).");
 
             // Ensure certificate was issued by a valid EVoting CA
-            string issuer = cert.Issuer;
-            if (!issuer.Contains("EVoting Organizer CA") && !issuer.Contains("EVoting Voter CA"))
-                throw new InvalidOperationException("Certificate issued by an invalid CA.");
+            var organizerCa = OrganizerCaService.GetOrCreateCa();
+            var voterCa = VoterCaService.GetOrCreateCa();
+
+            bool issuedByOrganizerCa =
+                cert.Issuer == organizerCa.Subject;
+
+            bool issuedByVoterCa =
+                cert.Issuer == voterCa.Subject;
+
+            if (!issuedByOrganizerCa && !issuedByVoterCa)
+                throw new InvalidOperationException(
+                    "Certificate was not issued by a trusted EVoting CA.");
         }
 
         // Validate PFX file

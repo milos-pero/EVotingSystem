@@ -29,14 +29,6 @@ namespace EVotingSystem.Security
                 new X509KeyUsageExtension(
                     X509KeyUsageFlags.DigitalSignature | X509KeyUsageFlags.KeyEncipherment,
                     true));
-
-            // Extensions
-            request.CertificateExtensions.Add(
-                new X509Extension(
-                    "1.2.3.4.5.6.7.8.1",
-                    System.Text.Encoding.UTF8.GetBytes(user.GetType().Name),
-                    false));
-
             var issuer = user is Organizer
                 ? OrganizerCaService.GetOrCreateCa()
                 : VoterCaService.GetOrCreateCa();

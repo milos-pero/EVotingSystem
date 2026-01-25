@@ -44,12 +44,13 @@ namespace EVotingSystem.Views
                     return;
                 }
 
-                if (user.Password != password)
+                if (!PasswordHashService.VerifyPassword(password, user.PasswordHash,user.KeySalt))
                 {
                     loginFail();
                     MessageBox.Show("Pogresna lozinka.");
                     return;
                 }
+
 
                 string pfxPassword = KeyProtectionService
                     .DerivePfxPassword(password, user.KeySalt!);
@@ -108,9 +109,7 @@ namespace EVotingSystem.Views
 
             if (loginAttempts >= 3)
             {
-                CrlService.Revoke(
-                    publicCertificate,
-                    "Three failed login attempts");
+                CrlService.RevokeCertificate(publicCertificate);
 
                 MessageBox.Show(
                     "Sertifikat je opozvan zbog 3 neuspešna pokušaja prijave.",
