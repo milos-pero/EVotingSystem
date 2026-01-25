@@ -97,10 +97,10 @@ namespace EVotingSystem.Views
 
         private string? DecryptVoteChoice(EncryptedVote vote)
         {
-            // 1. Get organizer private certificate
+            // Get organizer private certificate
             var organizerCert = OrganizerCaService.GetOrCreateCa();
 
-            // 2. Get voter public certificate
+            // Get voter public certificate
             var voter = UserRepository.FindById(vote.VoterId);
             if (voter == null || string.IsNullOrEmpty(voter.PublicCertPath))
                 return null;
@@ -108,14 +108,14 @@ namespace EVotingSystem.Views
             var voterCert = new X509Certificate2(voter.PublicCertPath);
 
 
-            // 3. Verify signature FIRST
+            // Verify signature FIRST
             if (!SignatureValidationService.VerifyVoteSignature(vote, voterCert))
                 return null;
 
-            // 4. Decrypt AES key
+            // Decrypt AES key
             byte[] aesKey = DecryptAesKey(vote.EncryptedAesKey, organizerCert);
 
-            // 5. Decrypt vote
+            // Decrypt vote
             return DecryptVote(vote, aesKey);
         }
 

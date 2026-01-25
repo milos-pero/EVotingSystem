@@ -41,14 +41,14 @@ namespace EVotingSystem.Views
                 SelectedCertificate = new X509Certificate2(
                     File.ReadAllBytes(SelectedCertificatePath));
 
-                // 1. Standard certificate validation (expiry, chain, CRL)
+                // Standard certificate validation (expiry, chain, CRL)
                 CertificateValidationService
                     .ValidatePublicUserCertificate(SelectedCertificate);
 
-                // 2. Determine user type from issuer
+                // Determine user type from issuer
                 CertificateUserType = GetUserTypeFromIssuer(SelectedCertificate);
 
-                // 3. UI success
+                // success
                 CertificateStatusText.Text =
                     $"Sertifikat je validan ✔";
                 CertificateStatusText.Foreground = Brushes.Green;

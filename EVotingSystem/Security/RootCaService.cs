@@ -49,9 +49,9 @@ namespace EVotingSystem.Security.Ca
                 DateTimeOffset.Now,
                 DateTimeOffset.Now.AddYears(10));
 
-            rootCa = cert; // already has private key
+            rootCa = cert; 
 
-            // Save to disk as PFX
+            // Save as PFX
             File.WriteAllBytes(path, rootCa.Export(X509ContentType.Pfx, RootCaPassword));
 
             return rootCa;

@@ -10,7 +10,6 @@
                 VerticalAlignment="Top"
                 Click="Back_Click"/>
 
-		<!-- MAIN CONTENT -->
 		<ScrollViewer Margin="0,50,0,0">
 			<StackPanel Margin="30">
 
@@ -35,17 +34,14 @@
 
 								<StackPanel>
 
-									<!-- Title -->
 									<TextBlock Text="{Binding Title}"
                                                FontSize="18"
                                                FontWeight="Bold"/>
 
-									<!-- Description -->
 									<TextBlock Text="{Binding Description}"
                                                Margin="0,5,0,5"
                                                TextWrapping="Wrap"/>
 
-									<!-- Period -->
 									<TextBlock Foreground="Gray" FontSize="12">
                                         <Run Text="Period: "/>
                                         <Run Text="{Binding StartTime, StringFormat=G}"/>
@@ -53,7 +49,6 @@
                                         <Run Text="{Binding EndTime, StringFormat=G}"/>
 									</TextBlock>
 
-									<!-- Status -->
 									<TextBlock FontSize="12"
                                                FontWeight="Bold"
                                                Margin="0,6,0,6">
@@ -75,7 +70,6 @@
 										</TextBlock.Style>
 									</TextBlock>
 
-									<!-- COUNT VOTES BUTTON -->
 									<Button Content="Prebroj glasove"
                                             Width="160"
                                             Height="35"

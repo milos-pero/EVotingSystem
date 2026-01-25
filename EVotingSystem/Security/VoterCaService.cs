@@ -32,7 +32,7 @@ namespace EVotingSystem.Security.Ca
 
             var rootCa = RootCaService.GetOrCreateRootCa();
 
-            // Create exportable RSA key
+            // Create RSA key
             using var rsa = RSA.Create(4096);
 
             var request = new CertificateRequest(

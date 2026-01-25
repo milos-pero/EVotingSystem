@@ -19,18 +19,18 @@ namespace EVotingSystem.Security
             if (voting.Status != VotingStatus.Active)
                 throw new InvalidOperationException("Glasanje nije aktivno.");
 
-            // 1. Serialize vote choice
+            // Serialize vote choice
 
             byte[] voteBytes = Encoding.UTF8.GetBytes(selectedOption);
 
-            // 2. Generate AES key
+            // Generate AES key
 
             using Aes aes = Aes.Create();
             aes.KeySize = 256;
             aes.GenerateKey();
             aes.GenerateIV();
 
-            // 3. Encrypt vote (AES)
+            // Encrypt vote (AES)
 
             byte[] encryptedVote;
             using (var encryptor = aes.CreateEncryptor())
@@ -39,13 +39,13 @@ namespace EVotingSystem.Security
                     voteBytes, 0, voteBytes.Length);
             }
 
-            // 4. Encrypt AES key (Organizer public key)
+            // Encrypt AES key (Organizer public key)
 
             using RSA organizerRsa = organizerCertificate.GetRSAPublicKey()!;
             byte[] encryptedAesKey = organizerRsa.Encrypt(
                 aes.Key, RSAEncryptionPadding.OaepSHA256);
 
-            // 5. Sign encrypted vote (Voter private key)
+            // Sign encrypted vote (Voter private key)
 
             using RSA voterRsa = voterCertificate.GetRSAPrivateKey()!;
             byte[] signature = voterRsa.SignData(
@@ -53,7 +53,7 @@ namespace EVotingSystem.Security
                 HashAlgorithmName.SHA256,
                 RSASignaturePadding.Pkcs1);
 
-            // 6. Create vote object
+            // Create vote object
 
             var encryptedVoteObj = new EncryptedVote
             {
@@ -66,7 +66,7 @@ namespace EVotingSystem.Security
                 Timestamp = DateTime.UtcNow
             };
 
-            // 7. Create metadata + HMAC
+            // Create metadata + HMAC
 
             byte[] metadataBytes = Encoding.UTF8.GetBytes(
                 $"{encryptedVoteObj.VoteId}|{encryptedVoteObj.VotingId}|{encryptedVoteObj.VoterId}|{encryptedVoteObj.Timestamp:o}");
@@ -83,7 +83,7 @@ namespace EVotingSystem.Security
                 Hmac = hmacValue
             };
 
-            // 8. Export vote
+            // Export vote
 
             VoteRepository.AddVote(encryptedVoteObj, metadata);
         }

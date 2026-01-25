@@ -4,7 +4,6 @@
 
 	<Grid Margin="40">
 
-		<!-- Logout button (top-right) -->
 		<Button Content="Odjava"
                 HorizontalAlignment="Right"
                 VerticalAlignment="Top"
@@ -14,7 +13,6 @@
                 FontWeight="Bold"
                 Click="Logout_Click"/>
 
-		<!-- Center content -->
 		<StackPanel HorizontalAlignment="Center"
                     VerticalAlignment="Center"
                     Width="300">

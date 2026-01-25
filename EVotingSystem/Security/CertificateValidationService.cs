@@ -7,7 +7,7 @@ namespace EVotingSystem.Security
 {
     public static class CertificateValidationService
     {
-        // Validate a public cert file
+
         // Check expiry, chain, and issuer
         public static void ValidatePublicUserCertificate(X509Certificate2 cert)
         {
@@ -42,7 +42,7 @@ namespace EVotingSystem.Security
             if (CrlService.IsRevoked(cert))
                 throw new InvalidOperationException("Sertifikat je opozvan (CRL).");
 
-            // Ensure certificate was issued by a valid EVoting CA
+            // Ensure certificate was issued by a valid CA
             var organizerCa = OrganizerCaService.GetOrCreateCa();
             var voterCa = VoterCaService.GetOrCreateCa();
 
@@ -57,8 +57,7 @@ namespace EVotingSystem.Security
                     "Certificate was not issued by a trusted EVoting CA.");
         }
 
-        // Validate PFX file
-        // Check expiry, chain, issuer, and gets private key with PFX password
+        // Check expiry, chain, issuer, and get private key with PFX password
         public static void ValidateFullUserCertificate(X509Certificate2 cert)
         {
             if (cert == null)

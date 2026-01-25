@@ -10,7 +10,6 @@
                 Padding="12,6"
                 Click="Back_Click"/>
 
-		<!-- MAIN CONTENT -->
 		<ScrollViewer Margin="0,50,0,0">
 			<StackPanel Margin="30">
 

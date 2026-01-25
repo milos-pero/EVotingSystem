@@ -74,7 +74,7 @@ namespace EVotingSystem.Views
 
         private void Vote_Click(object sender, RoutedEventArgs e)
         {
-            // Find selected radio button
+            // Find selected button
             var selectedRadio = OptionsPanel.Children
                 .OfType<RadioButton>()
                 .FirstOrDefault(r => r.IsChecked == true);

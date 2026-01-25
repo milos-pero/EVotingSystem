@@ -29,7 +29,6 @@ namespace EVotingSystem.Persistence
                 File.WriteAllText(MetadataFile, "[]");
         }
 
-        // PUBLIC
 
         public static void AddVote(EncryptedVote vote, VoteMetadata metadata)
         {
@@ -68,8 +67,6 @@ namespace EVotingSystem.Persistence
                 .ToList();
         }
 
-
-        // PRIVATE
 
         private static List<EncryptedVote> LoadAllVotes()
         {

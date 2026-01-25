@@ -44,12 +44,12 @@ namespace EVotingSystem.Views
 
         private void Register_Click(object sender, RoutedEventArgs e)
         {
-            // 1️ Load user and password
+            // Username and password
             (User newUser, string password) = GetUserFromForm();
             if (newUser == null)
                 return;
 
-            // 2 Check duplicates
+            // Check duplicates
             bool nameExists = UserRepository.GetAllUsers().Any(u =>
             {
                 if (newUser is Voter nv && u is Voter v)
@@ -81,17 +81,17 @@ namespace EVotingSystem.Views
                 }
             }
 
-            // 3️ Generate salt
+            // Generate salt
             byte[] salt = KeyProtectionService.GenerateSalt();
             newUser.KeySalt = salt;
 
-            // 4️ Hash password
+            // Hash password
             newUser.PasswordHash = PasswordHashService.HashPassword(password, salt);
 
-            // 5️ Get PFX password
+            // Get PFX password
             string pfxPassword = KeyProtectionService.DerivePfxPassword(password, salt);
 
-            // 6️ Issue certificate
+            // Issue certificate
             var cert = CertificateIssuer.IssueUserCertificate(newUser);
 
             string certDir = "Certificates";
@@ -106,7 +106,7 @@ namespace EVotingSystem.Views
             newUser.CertificatePath = pfxPath;
             newUser.PublicCertPath = cerPath;
 
-            // 7️ Save user
+            // Save user
             UserRepository.AddUser(newUser);
 
             MessageBox.Show("User registered successfully!");

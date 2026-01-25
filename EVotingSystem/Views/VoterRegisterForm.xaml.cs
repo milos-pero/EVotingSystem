@@ -15,7 +15,6 @@ using System.Windows.Shapes;
 
 namespace EVotingSystem.Views
 {
-    // Interaction logic for VoterRegisterForm.xaml
     public partial class VoterRegisterForm : UserControl
     {
         public VoterRegisterForm()

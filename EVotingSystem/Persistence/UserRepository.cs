@@ -20,8 +20,6 @@ namespace EVotingSystem.Persistence
                 File.WriteAllText(UsersFile, "[]");
         }
 
-        // PUBLIC
-
         public static void AddUser(User user)
         {
             var users = LoadAllInternal();
@@ -62,7 +60,6 @@ namespace EVotingSystem.Persistence
         }
 
 
-        // PRIVATE
 
         private static List<UserDto> LoadAllInternal()
         {
@@ -180,7 +177,7 @@ namespace EVotingSystem.Persistence
             return null;
         }
 
-        // DTO CLASS
+
 
         private class UserDto
         {
@@ -191,11 +188,9 @@ namespace EVotingSystem.Persistence
             public string CertificatePath { get; set; }
             public string PublicCertPath { get; set; }
 
-            // Organizer
             public string? OrganizationName { get; set; }
             public string? OrganizationId { get; set; }
 
-            // Voter
             public string? FirstName { get; set; }
             public string? LastName { get; set; }
             public string? Username { get; set; }

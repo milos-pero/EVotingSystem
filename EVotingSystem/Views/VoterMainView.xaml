@@ -4,7 +4,6 @@
 
     <Grid>
 
-        <!-- Logout button (top-right) -->
         <Button Content="Odjava"
                 HorizontalAlignment="Right"
                 VerticalAlignment="Top"
@@ -15,7 +14,6 @@
                 FontWeight="Bold"
                 Click="Logout_Click"/>
 
-        <!-- Main content -->
         <ScrollViewer Margin="0,40,0,0">
             <StackPanel Margin="20">
 
