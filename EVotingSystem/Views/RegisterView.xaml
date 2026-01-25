@@ -5,7 +5,7 @@
 
 	<StackPanel Margin="40" Width="300" HorizontalAlignment="Center">
 
-		<Button Content="← Nazad"
+		<Button Content="Nazad"
         Width="100"
         Margin="20"
         HorizontalAlignment="Left"

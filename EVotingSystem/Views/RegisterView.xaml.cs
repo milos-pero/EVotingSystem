@@ -109,7 +109,7 @@ namespace EVotingSystem.Views
             // Save user
             UserRepository.AddUser(newUser);
 
-            MessageBox.Show("User registered successfully!");
+            MessageBox.Show("Uspesna prijava!");
         }
 
         private (User user, string plainPassword) GetUserFromForm()
